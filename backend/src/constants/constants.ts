@@ -30,4 +30,7 @@ export const ROUTES = {
     REPORTS: {
         ROOT: '/api/reports',
     },
+    USERS: {
+        ROOT: '/api/admin/users',
+    },
 };

@@ -24,6 +24,10 @@ export class AuthService implements IAuthService {
             throw new Error(APP_MESSAGES.AUTH_FAILED);
         }
 
+        if (user.isActive === false) {
+            throw new Error('Your account has been blocked by an administrator.');
+        }
+
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
             throw new Error(APP_MESSAGES.AUTH_FAILED);
@@ -105,7 +109,7 @@ export class AuthService implements IAuthService {
             throw new Error('Email already exists');
         }
 
-        
+
         const lastOTP = await OTP.findOne({ email }).sort({ createdAt: -1 });
         if (lastOTP) {
             const timeDiff = (Date.now() - lastOTP.createdAt.getTime()) / 1000;
