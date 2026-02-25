@@ -84,16 +84,68 @@ const InventoryPage: React.FC = () => {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                            <Button variant="outline" className="gap-2 shrink-0 border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground">
-                                <LayoutGrid className="w-4 h-4" />
-                                Export
+                        <div className="grid grid-cols-1 w-full sm:flex sm:w-auto">
+                            <Button variant="outline" className="w-full gap-2 justify-center sm:w-auto border-white/10 hover:bg-white/5 text-muted-foreground hover:text-foreground">
+                                <LayoutGrid className="w-4 h-4 shrink-0" />
+                                <span className="truncate">Export</span>
                             </Button>
                         </div>
                     </div>
 
-                    {/* Table */}
-                    <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
+                    {/* Mobile & Tablet Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 xl:hidden">
+                        {loading ? (
+                            <div className="col-span-full py-12 flex justify-center">
+                                <Spinner className="mx-auto" />
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="col-span-full py-12 text-center text-muted-foreground bg-card rounded-xl border border-white/10">
+                                <PackageOpen className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                                No products found
+                            </div>
+                        ) : (
+                            products.map((product) => (
+                                <div key={product._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
+                                    <div className="flex items-center gap-3 pr-8">
+                                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                                            <Package className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="font-semibold text-foreground truncate">{product.name}</div>
+                                            <div className="text-xs text-muted-foreground truncate">{product.sku}</div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm bg-background/50 p-3 rounded-lg border border-white/5 mt-auto">
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Category</span>
+                                            <span className="font-medium text-xs truncate max-w-[100px] block">{product.category}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Price</span>
+                                            <span className="font-medium text-xs">${product.price.toFixed(2)}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Stock</span>
+                                            <span className="font-medium text-xs">{product.quantity}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Status</span>
+                                            {product.quantity === 0 ? (
+                                                <Badge variant="destructive" className="bg-red-500/10 text-red-500 shadow-none border-red-500/20 px-1.5 py-0 text-[10px]">Out of Stock</Badge>
+                                            ) : product.quantity <= product.lowStockThreshold ? (
+                                                <Badge variant="outline" className="bg-amber-500/10 text-amber-500 shadow-none border-amber-500/20 px-1.5 py-0 text-[10px]">Low Stock</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 shadow-none border-emerald-500/20 px-1.5 py-0 text-[10px]">In Stock</Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table (Hidden on smaller screens) */}
+                    <div className="hidden xl:block rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
                         <Table>
                             <TableHeader className="bg-white/5">
                                 <TableRow className="hover:bg-transparent border-white/10">

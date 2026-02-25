@@ -142,35 +142,35 @@ const AdminInventoryPage: React.FC = () => {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                            <Button variant="outline" className="gap-2 shrink-0">
-                                <LayoutGrid className="w-4 h-4" />
-                                Export
+                        <div className="grid grid-cols-2 gap-3 w-full sm:flex sm:w-auto">
+                            <Button variant="outline" className="w-full gap-2 justify-center sm:w-auto">
+                                <LayoutGrid className="w-4 h-4 shrink-0" />
+                                <span className="truncate">Export</span>
                             </Button>
 
                             <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                                 <DialogTrigger asChild>
-                                    <Button onClick={() => handleOpenModal()} className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(157,0,255,0.3)] shrink-0 w-full sm:w-auto">
-                                        <Plus className="w-4 h-4" />
-                                        Add Item
+                                    <Button onClick={() => handleOpenModal()} className="w-full gap-2 bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(157,0,255,0.3)] justify-center sm:w-auto">
+                                        <Plus className="w-4 h-4 shrink-0" />
+                                        <span className="truncate">Add Item</span>
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px] bg-card border-border">
+                                <DialogContent className="w-[95vw] max-w-[425px] bg-card border-border rounded-xl">
                                     <DialogHeader>
                                         <DialogTitle>{editingId ? 'Edit Product' : 'Add New Product'}</DialogTitle>
                                     </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="name" className="text-right">Name <span className="text-red-500">*</span></Label>
-                                            <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="col-span-3 border-border bg-background" />
+                                    <div className="grid gap-3 py-4 max-h-[65vh] overflow-y-auto px-1 snap-y">
+                                        <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
+                                            <Label htmlFor="name" className="sm:text-right font-medium">Name <span className="text-red-500">*</span></Label>
+                                            <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="sku" className="text-right">SKU <span className="text-red-500">*</span></Label>
-                                            <Input id="sku" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="col-span-3 border-border bg-background" />
+                                        <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
+                                            <Label htmlFor="sku" className="sm:text-right font-medium">SKU <span className="text-red-500">*</span></Label>
+                                            <Input id="sku" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="category" className="text-right">Category <span className="text-red-500">*</span></Label>
-                                            <div className="col-span-3">
+                                        <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
+                                            <Label htmlFor="category" className="sm:text-right font-medium">Category <span className="text-red-500">*</span></Label>
+                                            <div className="sm:col-span-3">
                                                 <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
                                                     <SelectTrigger className="border-border bg-background">
                                                         <SelectValue placeholder="Select category" />
@@ -184,13 +184,13 @@ const AdminInventoryPage: React.FC = () => {
                                                 </Select>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="price" className="text-right">Price</Label>
-                                            <Input id="price" type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} className="col-span-3 border-border bg-background" />
+                                        <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
+                                            <Label htmlFor="price" className="sm:text-right font-medium">Price</Label>
+                                            <Input id="price" type="number" min="0" step="0.01" value={formData.price === 0 ? '' : formData.price} onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                            <Label htmlFor="qty" className="text-right">Quantity</Label>
-                                            <Input id="qty" type="number" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })} className="col-span-3 border-border bg-background" />
+                                        <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
+                                            <Label htmlFor="qty" className="sm:text-right font-medium">Quantity</Label>
+                                            <Input id="qty" type="number" min="0" value={formData.quantity === 0 ? '' : formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
                                     </div>
                                     <DialogFooter>
@@ -204,8 +204,80 @@ const AdminInventoryPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Table */}
-                    <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
+                    {/* Mobile & Tablet Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 xl:hidden">
+                        {loading ? (
+                            <div className="col-span-full py-12 flex justify-center">
+                                <Spinner className="mx-auto" />
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="col-span-full py-12 text-center text-muted-foreground bg-card rounded-xl border border-white/10">
+                                <PackageOpen className="w-10 h-10 mx-auto mb-3 opacity-20" />
+                                No products found
+                            </div>
+                        ) : (
+                            products.map((product) => (
+                                <div key={product._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
+                                    <div className="absolute top-3 right-3">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-white/10 text-muted-foreground">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="bg-card border-border">
+                                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                <DropdownMenuItem onClick={() => handleOpenModal(product)} className="cursor-pointer gap-2 focus:bg-white/5">
+                                                    <Edit className="w-4 h-4 text-muted-foreground" />
+                                                    Edit
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => handleDeleteProduct(product._id)} className="cursor-pointer gap-2 text-red-500 focus:bg-red-500/10 focus:text-red-500">
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                    <div className="flex items-center gap-3 pr-8">
+                                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                                            <Package className="w-5 h-5 text-primary" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="font-semibold text-foreground truncate">{product.name}</div>
+                                            <div className="text-xs text-muted-foreground truncate">{product.sku}</div>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-sm bg-background/50 p-3 rounded-lg border border-white/5 mt-auto">
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Category</span>
+                                            <span className="font-medium text-xs truncate max-w-[100px] block">{product.category}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Price</span>
+                                            <span className="font-medium text-xs">${product.price.toFixed(2)}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Stock</span>
+                                            <span className="font-medium text-xs">{product.quantity}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Status</span>
+                                            {product.quantity === 0 ? (
+                                                <Badge variant="destructive" className="bg-red-500/10 text-red-500 shadow-none border-red-500/20 px-1.5 py-0 text-[10px]">Out of Stock</Badge>
+                                            ) : product.quantity <= product.lowStockThreshold ? (
+                                                <Badge variant="outline" className="bg-amber-500/10 text-amber-500 shadow-none border-amber-500/20 px-1.5 py-0 text-[10px]">Low Stock</Badge>
+                                            ) : (
+                                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 shadow-none border-emerald-500/20 px-1.5 py-0 text-[10px]">In Stock</Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table (Hidden on smaller screens) */}
+                    <div className="hidden xl:block rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
                         <Table>
                             <TableHeader className="bg-white/5">
                                 <TableRow className="hover:bg-transparent border-white/10">
