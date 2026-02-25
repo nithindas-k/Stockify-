@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { Plus, ShoppingCart, ShoppingBag, Search, Bell, MapPin, SearchX } from 'lucide-react';
+import { Plus, ShoppingCart, ShoppingBag, Search, Bell, SearchX } from 'lucide-react';
 import { saleService } from '../../services/sale/saleService';
 import { inventoryService } from '../../services/inventory/inventoryService';
 import { customerService } from '../../services/customer/customerService';

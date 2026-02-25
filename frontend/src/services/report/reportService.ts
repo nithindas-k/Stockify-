@@ -20,4 +20,7 @@ export const reportService = {
 
     getCustomersReport: (params?: ReportParams) =>
         apiClient.get(REPORT_ROUTES.CUSTOMERS, { params }),
+
+    getCustomerLedger: (customerId: string) =>
+        apiClient.get(REPORT_ROUTES.CUSTOMER_LEDGER(customerId)),
 };

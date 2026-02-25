@@ -5,7 +5,7 @@ import {
     AlertTriangle, BarChart3, Bell, ChevronRight,
 } from 'lucide-react';
 
-/* ─── stats ─────────────────────────────────────────────────── */
+
 const stats = [
     { label: 'Total Items', value: '1,234', trend: '+12% this month', icon: Package, color: 'text-blue-400', urgent: false },
     { label: 'Total Sales', value: '₹45,678', trend: '+8% this month', icon: TrendingUp, color: 'text-emerald-400', urgent: false },

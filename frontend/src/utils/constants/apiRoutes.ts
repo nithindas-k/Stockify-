@@ -55,4 +55,5 @@ export const REPORT_ROUTES = {
     SALES: '/reports/sales',
     INVENTORY: '/reports/inventory',
     CUSTOMERS: '/reports/customers',
+    CUSTOMER_LEDGER: (id: string) => `/reports/customer/${id}`,
 } as const;

@@ -11,6 +11,7 @@ import AdminProtectedRoute from './components/AdminProtectedRoute';
 import InventoryPage from './pages/user/InventoryPage';
 import CustomersPage from './pages/user/CustomersPage';
 import SalesPage from './pages/user/SalesPage';
+import ReportsPage from './pages/user/ReportsPage';
 
 
 function App() {
@@ -29,7 +30,7 @@ function App() {
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/sales" element={<SalesPage />} />
-          <Route path="/reports" element={<div>Reports Page (Coming Soon)</div>} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Route>
 
         {/* ── Admin Protected Routes ── */}
