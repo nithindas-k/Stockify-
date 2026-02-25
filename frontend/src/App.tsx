@@ -13,6 +13,7 @@ import CustomersPage from './pages/user/CustomersPage';
 import SalesPage from './pages/user/SalesPage';
 import ReportsPage from './pages/user/ReportsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/inventory" element={<AdminInventoryPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
-          <Route path="/admin/orders" element={<div className="p-8 text-white">Orders (Coming Soon)</div>} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
           <Route path="/admin/reports" element={<div className="p-8 text-white">Reports (Coming Soon)</div>} />
           <Route path="/admin/notifications" element={<div className="p-8 text-white">Notifications (Coming Soon)</div>} />
           <Route path="/admin/settings" element={<div className="p-8 text-white">Settings (Coming Soon)</div>} />

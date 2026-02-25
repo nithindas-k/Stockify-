@@ -1,8 +1,9 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ISale extends Document {
-    customerName: string; // From the Customer Collection, or manual "Cash" entry
-    customerId?: mongoose.Types.ObjectId; // Optional link if it's an existing customer profile
+    customerName: string; 
+    customerId?: mongoose.Types.ObjectId; 
+    userId?: mongoose.Types.ObjectId; 
     items: {
         productId: mongoose.Types.ObjectId;
         quantity: number;
@@ -19,6 +20,7 @@ const SaleSchema: Schema = new Schema(
     {
         customerName: { type: String, required: true },
         customerId: { type: Schema.Types.ObjectId, ref: 'Customer', required: false },
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: false },
         items: [
             {
                 productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },

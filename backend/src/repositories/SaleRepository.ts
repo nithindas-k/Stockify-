@@ -8,7 +8,7 @@ export class SaleRepository implements ISaleRepository {
     }
 
     async findById(id: string): Promise<ISale | null> {
-        return await Sale.findById(id).populate('items.productId');
+        return await Sale.findById(id).populate('items.productId').populate('userId', 'name email');
     }
 
     async findAll(query?: string): Promise<ISale[]> {
@@ -18,10 +18,10 @@ export class SaleRepository implements ISaleRepository {
                 { customerName: { $regex: query, $options: 'i' } }
             ];
         }
-        return await Sale.find(filter).sort({ saleDate: -1 }).populate('items.productId');
+        return await Sale.find(filter).sort({ saleDate: -1 }).populate('items.productId').populate('userId', 'name email');
     }
 
     async findByCustomerId(customerId: string): Promise<ISale[]> {
-        return await Sale.find({ customerId }).sort({ saleDate: -1 }).populate('items.productId');
+        return await Sale.find({ customerId }).sort({ saleDate: -1 }).populate('items.productId').populate('userId', 'name email');
     }
 }

@@ -43,7 +43,6 @@ export class SaleService {
             }
         }
 
-        // 3. Document Sale
         const finalSaleParam: any = {
             customerName: saleData.customerName,
             paymentMethod: saleData.paymentMethod,
@@ -53,6 +52,10 @@ export class SaleService {
 
         if (saleData.customerId) {
             finalSaleParam.customerId = saleData.customerId;
+        }
+
+        if (saleData.userId) {
+            finalSaleParam.userId = saleData.userId;
         }
 
         return await this.saleRepository.create(finalSaleParam);

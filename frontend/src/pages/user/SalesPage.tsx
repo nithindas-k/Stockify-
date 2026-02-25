@@ -150,6 +150,7 @@ const SalesPage: React.FC = () => {
             const payload = {
                 customerName: formCustomerName,
                 customerId: formCustomerId === 'cash' ? undefined : formCustomerId,
+                userId: user?.id || (user as any)?._id,
                 paymentMethod: formPaymentMethod,
                 items: formItems.map(i => ({ productId: i.productId, quantity: i.quantity }))
             };
