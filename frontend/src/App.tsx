@@ -5,8 +5,11 @@ import VerifyPage from './pages/auth/VerifyPage';
 import AdminLoginPage from './pages/auth/AdminLoginPage';
 import Dashboard from './pages/user/Dashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminInventoryPage from './pages/admin/AdminInventoryPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import InventoryPage from './pages/user/InventoryPage';
+
 
 function App() {
   return (
@@ -21,7 +24,7 @@ function App() {
         {/* ── User Protected Routes ── */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/inventory" element={<div>Inventory Page (Coming Soon)</div>} />
+          <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/customers" element={<div>Customers Page (Coming Soon)</div>} />
           <Route path="/sales" element={<div>Sales Page (Coming Soon)</div>} />
           <Route path="/reports" element={<div>Reports Page (Coming Soon)</div>} />
@@ -30,7 +33,7 @@ function App() {
         {/* ── Admin Protected Routes ── */}
         <Route element={<AdminProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/inventory" element={<div className="p-8 text-white">Inventory (Coming Soon)</div>} />
+          <Route path="/admin/inventory" element={<AdminInventoryPage />} />
           <Route path="/admin/users" element={<div className="p-8 text-white">Users (Coming Soon)</div>} />
           <Route path="/admin/orders" element={<div className="p-8 text-white">Orders (Coming Soon)</div>} />
           <Route path="/admin/reports" element={<div className="p-8 text-white">Reports (Coming Soon)</div>} />

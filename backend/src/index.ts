@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { APP_MESSAGES, ROUTES } from './constants/constants';
 import authRoutes from './routes/AuthRoutes';
+import productRoutes from './routes/ProductRoutes';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ mongoose.connect(mongoURI)
     .catch((err) => console.error(APP_MESSAGES.DB_CONNECTION_ERROR, err));
 
 app.use(ROUTES.AUTH.ROOT, authRoutes);
+app.use(ROUTES.INVENTORY.ROOT, productRoutes);
 
 app.get('/', (req, res) => {
     res.send('Stockify API is running');
