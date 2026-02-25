@@ -14,6 +14,7 @@ import SalesPage from './pages/user/SalesPage';
 import ReportsPage from './pages/user/ReportsPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import AdminReportsPage from './pages/admin/AdminReportsPage';
 
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
           <Route path="/admin/inventory" element={<AdminInventoryPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/orders" element={<AdminOrdersPage />} />
-          <Route path="/admin/reports" element={<div className="p-8 text-white">Reports (Coming Soon)</div>} />
+          <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/admin/notifications" element={<div className="p-8 text-white">Notifications (Coming Soon)</div>} />
           <Route path="/admin/settings" element={<div className="p-8 text-white">Settings (Coming Soon)</div>} />
         </Route>
