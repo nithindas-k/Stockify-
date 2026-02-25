@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { ReportService } from '../services/ReportService';
+import { MailService } from '../utils/MailService';
 
 export class ReportController {
     constructor(private reportService: ReportService) { }
@@ -29,6 +30,21 @@ export class ReportController {
             res.status(200).json({ data: report });
         } catch (error: any) {
             res.status(404).json({ message: error.message });
+        }
+    };
+
+    emailReport = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email, subject, htmlContent } = req.body;
+            if (!email || !htmlContent) {
+                res.status(400).json({ message: 'Email and content are required' });
+                return;
+            }
+            const mailer = new MailService();
+            await mailer.sendReport(email, subject || 'Stockify Report', htmlContent);
+            res.status(200).json({ message: 'Report emailed successfully' });
+        } catch (error: any) {
+            res.status(500).json({ message: 'Failed to send email' });
         }
     };
 }

@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Bell } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Bell, Download, Printer, Mail, LayoutGrid } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 // Shadcn components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '../../components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../../components/ui/dialog';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
 import { Spinner } from '../../components/ui/spinner';
 import { Badge } from '../../components/ui/badge';
 
@@ -45,6 +52,12 @@ const ReportsPage: React.FC = () => {
     // Dependencies
     const [customers, setCustomers] = useState<any[]>([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
+    const [activeTab, setActiveTab] = useState('sales');
+
+    // Email Modal State
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+    const [emailAddress, setEmailAddress] = useState('');
+    const [emailing, setEmailing] = useState(false);
 
     const fetchSales = async () => {
         setSalesLoading(true);
@@ -103,6 +116,74 @@ const ReportsPage: React.FC = () => {
         }
     }, [selectedCustomerId]);
 
+    // Export Utils
+    const getTableId = () => `${activeTab}-table`;
+    const getReportTitle = () => activeTab === 'sales' ? 'Sales Report' : activeTab === 'items' ? 'Inventory Items Report' : 'Customer Ledger';
+
+    const handlePrint = () => {
+        const table = document.getElementById(getTableId());
+        if (!table) return toast.error("No data available to print in this tab.");
+        const printWindow = window.open('', '', 'height=600,width=800');
+        if (!printWindow) return;
+        printWindow.document.write(`<html><head><title>${getReportTitle()}</title>`);
+        printWindow.document.write('<style>table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</style>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(`<h2>${getReportTitle()}</h2>`);
+        printWindow.document.write(table.outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    };
+
+    const handleExportPDF = () => {
+        const table = document.getElementById(getTableId());
+        if (!table) return toast.error("No data available to export.");
+        const doc = new jsPDF();
+        doc.text(getReportTitle(), 14, 15);
+        autoTable(doc, { html: `#${getTableId()}`, startY: 20 });
+        doc.save(`${activeTab}_report.pdf`);
+        toast.success("PDF Downloaded");
+    };
+
+    const handleExportExcel = () => {
+        const table = document.getElementById(getTableId());
+        if (!table) return toast.error("No data available to export.");
+        const wb = XLSX.utils.table_to_book(table, { sheet: "Report" });
+        XLSX.writeFile(wb, `${activeTab}_report.xlsx`);
+        toast.success("Excel Downloaded");
+    };
+
+    const handleSendEmail = async () => {
+        if (!emailAddress) return toast.error("Enter a valid email address");
+        const table = document.getElementById(getTableId());
+        if (!table) return toast.error("No data available to email.");
+
+        setEmailing(true);
+        try {
+            const htmlContent = `
+                <h2>${getReportTitle()}</h2>
+                <table style="width: 100%; border-collapse: collapse; font-family: sans-serif;">
+                    ${table.innerHTML}
+                </table>
+               <style>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</style>
+            `;
+            await reportService.emailReport({
+                email: emailAddress,
+                subject: `Stockify - ${getReportTitle()}`,
+                htmlContent
+            });
+            toast.success("Report emailed securely!");
+            setIsEmailModalOpen(false);
+            setEmailAddress('');
+        } catch (error: any) {
+            toast.error("Failed to email report");
+        } finally {
+            setEmailing(false);
+        }
+    };
+
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
             <UserSidebar />
@@ -126,18 +207,44 @@ const ReportsPage: React.FC = () => {
                 </header>
 
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-                    <Tabs defaultValue="sales" className="w-full space-y-6">
-                        <TabsList className="bg-card border border-white/10 p-1 flex w-full max-w-md mx-auto sm:mx-0">
-                            <TabsTrigger value="sales" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
-                                <TrendingUp className="w-4 h-4" /> Sales
-                            </TabsTrigger>
-                            <TabsTrigger value="items" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
-                                <PackageSearch className="w-4 h-4" /> Items
-                            </TabsTrigger>
-                            <TabsTrigger value="ledger" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
-                                <Users className="w-4 h-4" /> Ledger
-                            </TabsTrigger>
-                        </TabsList>
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+
+                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <TabsList className="bg-card border border-white/10 p-1 flex w-full max-w-md">
+                                <TabsTrigger value="sales" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
+                                    <TrendingUp className="w-4 h-4" /> Sales
+                                </TabsTrigger>
+                                <TabsTrigger value="items" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
+                                    <PackageSearch className="w-4 h-4" /> Items
+                                </TabsTrigger>
+                                <TabsTrigger value="ledger" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
+                                    <Users className="w-4 h-4" /> Ledger
+                                </TabsTrigger>
+                            </TabsList>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="gap-2 border-primary/50 text-primary hover:bg-primary/10">
+                                        <Download className="w-4 h-4" /> Export Report
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48 bg-card border-border">
+                                    <DropdownMenuLabel>Share Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={handlePrint} className="cursor-pointer gap-2">
+                                        <Printer className="w-4 h-4" /> Print Document
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer gap-2 text-red-400 focus:text-red-400">
+                                        <FileText className="w-4 h-4" /> Export as PDF
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleExportExcel} className="cursor-pointer gap-2 text-emerald-400 focus:text-emerald-400">
+                                        <LayoutGrid className="w-4 h-4" /> Export to Excel
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setIsEmailModalOpen(true)} className="cursor-pointer gap-2 text-blue-400 focus:text-blue-400">
+                                        <Mail className="w-4 h-4" /> Email Report
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
 
                         {/* --- SALES REPORT TAB --- */}
                         <TabsContent value="sales" className="space-y-6 animate-in fade-in-50 zoom-in-95 duration-300">
@@ -150,7 +257,7 @@ const ReportsPage: React.FC = () => {
                                         <SummaryCard title="Total Transactions" value={salesReport.summary?.totalSales || 0} subtitle="Count of completed sales" />
                                     </div>
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
-                                        <Table>
+                                        <Table id="sales-table">
                                             <TableHeader className="bg-white/5">
                                                 <TableRow className="border-white/10">
                                                     <TableHead>Transaction</TableHead>
@@ -194,7 +301,7 @@ const ReportsPage: React.FC = () => {
                                         <SummaryCard title="Low Stock Warnings" value={itemsReport.summary?.lowStockItems || 0} subtitle="Items below threshold" />
                                     </div>
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
-                                        <Table>
+                                        <Table id="items-table">
                                             <TableHeader className="bg-white/5">
                                                 <TableRow className="border-white/10">
                                                     <TableHead>Product</TableHead>
@@ -256,7 +363,7 @@ const ReportsPage: React.FC = () => {
                                     </div>
 
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg mt-6">
-                                        <Table>
+                                        <Table id="ledger-table">
                                             <TableHeader className="bg-white/5">
                                                 <TableRow className="border-white/10">
                                                     <TableHead>Date</TableHead>
@@ -290,6 +397,31 @@ const ReportsPage: React.FC = () => {
                             ) : null}
                         </TabsContent>
                     </Tabs>
+
+                    {/* Email Modal */}
+                    <Dialog open={isEmailModalOpen} onOpenChange={setIsEmailModalOpen}>
+                        <DialogContent className="bg-card border-border rounded-xl">
+                            <DialogHeader>
+                                <DialogTitle>Email Report</DialogTitle>
+                            </DialogHeader>
+                            <div className="py-4">
+                                <Input
+                                    className="bg-background border-border"
+                                    placeholder="Enter email address"
+                                    type="email"
+                                    value={emailAddress}
+                                    onChange={(e) => setEmailAddress(e.target.value)}
+                                />
+                            </div>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setIsEmailModalOpen(false)}>Cancel</Button>
+                                <Button disabled={emailing || !emailAddress} onClick={handleSendEmail} className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(157,0,255,0.3)]">
+                                    {emailing ? <Spinner /> : 'Send Email'}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
                 </main>
             </div>
         </div>

@@ -56,4 +56,5 @@ export const REPORT_ROUTES = {
     INVENTORY: '/reports/inventory',
     CUSTOMERS: '/reports/customers',
     CUSTOMER_LEDGER: (id: string) => `/reports/customer/${id}`,
+    EMAIL_REPORT: '/reports/email',
 } as const;

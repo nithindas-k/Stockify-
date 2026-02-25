@@ -23,4 +23,7 @@ export const reportService = {
 
     getCustomerLedger: (customerId: string) =>
         apiClient.get(REPORT_ROUTES.CUSTOMER_LEDGER(customerId)),
+
+    emailReport: (payload: { email: string; subject: string; htmlContent: string }) =>
+        apiClient.post(REPORT_ROUTES.EMAIL_REPORT, payload),
 };

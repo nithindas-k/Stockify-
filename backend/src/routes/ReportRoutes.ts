@@ -9,5 +9,6 @@ const reportController = new ReportController(reportService);
 router.get('/sales', reportController.getSalesReport);
 router.get('/inventory', reportController.getItemsReport);
 router.get('/customer/:customerId', reportController.getCustomerLedger);
+router.post('/email', reportController.emailReport);
 
 export default router;
