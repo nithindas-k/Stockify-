@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import apiClient from '../../api/apiClient';
+import { authService } from '../../services/auth/authService';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from 'sonner';
 
 const SignupPage: React.FC = () => {
     const [name, setName] = useState('');
@@ -14,7 +15,6 @@ const SignupPage: React.FC = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
@@ -22,21 +22,17 @@ const SignupPage: React.FC = () => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            toast.error('Passwords do not match');
             return;
         }
 
         setLoading(true);
-        setError('');
 
         try {
-            await apiClient.post('/auth/send-otp', { email });
-            // Navigate to verify page with user data
-            navigate('/verify', {
-                state: { name, email, password }
-            });
+            await authService.sendOtp({ email });
+            navigate('/verify', { state: { name, email, password } });
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Something went wrong. Please try again later.');
+            toast.error(err.response?.data?.message || 'Something went wrong. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -64,12 +60,6 @@ const SignupPage: React.FC = () => {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        {error && (
-                            <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-semibold rounded-lg text-center animate-in fade-in zoom-in duration-200">
-                                {error}
-                            </div>
-                        )}
-
                         <form onSubmit={handleSendOTP} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>

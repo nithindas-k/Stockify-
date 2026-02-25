@@ -13,6 +13,7 @@ export const ROUTES = {
     AUTH: {
         ROOT: '/api/auth',
         LOGIN: '/login',
+        ADMIN_LOGIN: '/admin/login',
         REGISTER: '/register',
         SEND_OTP: '/send-otp',
         VERIFY_OTP: '/verify-otp',

@@ -1,0 +1,23 @@
+import apiClient from '../../api/apiClient';
+import { REPORT_ROUTES } from '../../utils/constants/apiRoutes';
+
+/* ── Query types ────────────────────────────────────────────── */
+export interface ReportParams {
+    startDate?: string;
+    endDate?: string;
+}
+
+/* ── Report Service ─────────────────────────────────────────── */
+export const reportService = {
+    getSummary: () =>
+        apiClient.get(REPORT_ROUTES.SUMMARY),
+
+    getSalesReport: (params?: ReportParams) =>
+        apiClient.get(REPORT_ROUTES.SALES, { params }),
+
+    getInventoryReport: (params?: ReportParams) =>
+        apiClient.get(REPORT_ROUTES.INVENTORY, { params }),
+
+    getCustomersReport: (params?: ReportParams) =>
+        apiClient.get(REPORT_ROUTES.CUSTOMERS, { params }),
+};

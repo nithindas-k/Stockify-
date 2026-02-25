@@ -42,6 +42,35 @@ export class AuthService implements IAuthService {
         };
     }
 
+    async adminLogin(credentials: LoginDTO): Promise<AuthResponseDTO> {
+        const user = await this.userRepository.findByEmail(credentials.email);
+
+        if (!user) {
+            throw new Error(APP_MESSAGES.AUTH_FAILED);
+        }
+
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+        if (!isPasswordValid) {
+            throw new Error(APP_MESSAGES.AUTH_FAILED);
+        }
+
+        if (user.role !== 'admin') {
+            throw new Error('Access denied. Admin accounts only.');
+        }
+
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET || 'supersecretkey',
+            { expiresIn: '1d' }
+        );
+
+        return {
+            user: UserMapper.toDTO(user),
+            token,
+            message: APP_MESSAGES.AUTH_SUCCESS,
+        };
+    }
+
     async register(userData: RegisterDTO): Promise<AuthResponseDTO> {
         const existingUser = await this.userRepository.findByEmail(userData.email);
         if (existingUser) {
@@ -76,7 +105,7 @@ export class AuthService implements IAuthService {
             throw new Error('Email already exists');
         }
 
-        // Check if OTP was sent less than 1 minute ago
+        
         const lastOTP = await OTP.findOne({ email }).sort({ createdAt: -1 });
         if (lastOTP) {
             const timeDiff = (Date.now() - lastOTP.createdAt.getTime()) / 1000;

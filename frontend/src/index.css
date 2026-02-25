@@ -87,3 +87,19 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
+/* ── Sonner Toast Close Button Overrides ── */
+[data-sonner-toast] [data-close-button] {
+  background-color: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  transition: all 0.2s ease !important;
+  transform: translate(30%, -30%) !important;
+  /* Proper positioning outside the toast */
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--primary)) !important;
+  border-color: hsl(var(--primary)) !important;
+}

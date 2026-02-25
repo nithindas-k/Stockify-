@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import apiClient from '../../api/apiClient';
+import { authService } from '../../services/auth/authService';
 import { useAuthStore } from '../../store/authStore';
-import { CheckCircle2, ChevronRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { ChevronRight, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { toast } from 'sonner';
 
 const VerifyPage: React.FC = () => {
     const setAuth = useAuthStore((state) => state.setAuth);
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState(false);
     const [resending, setResending] = useState(false);
-    const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
     const [resendTimer, setResendTimer] = useState(60);
 
     const navigate = useNavigate();
@@ -44,15 +43,13 @@ const VerifyPage: React.FC = () => {
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
 
         try {
-            const response = await apiClient.post('/auth/verify-otp', { name, email, password, otp });
-            // Log user in immediately and go to home
+            const response = await authService.verifyOtp({ name, email, password, otp });
             setAuth(response.data.user, response.data.token);
             navigate('/');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Invalid verification code. Please try again.');
+            toast.error(err.response?.data?.message || 'Invalid verification code. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -61,15 +58,13 @@ const VerifyPage: React.FC = () => {
     const handleResendOTP = async () => {
         if (resendTimer > 0) return;
         setResending(true);
-        setError('');
-        setSuccessMsg('');
 
         try {
-            await apiClient.post('/auth/send-otp', { email });
+            await authService.resendOtp({ email });
             setResendTimer(60);
-            setSuccessMsg('A new verification code has been sent.');
+            toast.success('A new verification code has been sent.');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to resend code.');
+            toast.error(err.response?.data?.message || 'Failed to resend code.');
         } finally {
             setResending(false);
         }
@@ -94,19 +89,6 @@ const VerifyPage: React.FC = () => {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        {error && (
-                            <div className="p-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm font-semibold rounded-lg text-center animate-in fade-in zoom-in duration-200">
-                                {error}
-                            </div>
-                        )}
-
-                        {successMsg && !error && (
-                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 animate-in fade-in zoom-in duration-200">
-                                <CheckCircle2 className="w-4 h-4" />
-                                {successMsg}
-                            </div>
-                        )}
-
                         <form onSubmit={handleVerify} className="space-y-6">
                             <div className="space-y-3 text-center">
                                 <Label htmlFor="otp" className="text-muted-foreground uppercase tracking-widest text-[10px] font-bold">Confirmation Code</Label>
