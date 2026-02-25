@@ -7,7 +7,7 @@ import {
 
 const stats = [
     { label: 'Total Items', value: '1,234', trend: '+12% this month', icon: Package, color: 'text-blue-400', urgent: false },
-    { label: 'Total Sales', value: '$45,678', trend: '+8% this month', icon: TrendingUp, color: 'text-emerald-400', urgent: false },
+    { label: 'Total Sales', value: '₹45,678', trend: '+8% this month', icon: TrendingUp, color: 'text-emerald-400', urgent: false },
     { label: 'Total Users', value: '567', trend: '+24 this week', icon: Users, color: 'text-violet-400', urgent: false },
     { label: 'Low Stock', value: '12', trend: 'Requires attention', icon: AlertTriangle, color: 'text-red-400', urgent: true },
 ];

@@ -254,7 +254,7 @@ const AdminInventoryPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Price</span>
-                                            <span className="font-medium text-xs">${product.price.toFixed(2)}</span>
+                                            <span className="font-medium text-xs">₹{product.price.toFixed(2)}</span>
                                         </div>
                                         <div>
                                             <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Stock</span>
@@ -322,7 +322,7 @@ const AdminInventoryPage: React.FC = () => {
                                                 <div className="text-xs text-muted-foreground">{product.category}</div>
                                             </TableCell>
                                             <TableCell className="text-right font-medium">
-                                                ${product.price.toFixed(2)}
+                                                ₹{product.price.toFixed(2)}
                                             </TableCell>
                                             <TableCell className="text-right font-medium">
                                                 {product.quantity}
