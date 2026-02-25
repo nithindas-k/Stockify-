@@ -8,6 +8,7 @@ import { APP_MESSAGES, ROUTES } from './constants/constants';
 import authRoutes from './routes/AuthRoutes';
 import productRoutes from './routes/ProductRoutes';
 import customerRoutes from './routes/CustomerRoutes';
+import saleRoutes from './routes/SaleRoutes';
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ mongoose.connect(mongoURI)
 app.use(ROUTES.AUTH.ROOT, authRoutes);
 app.use(ROUTES.INVENTORY.ROOT, productRoutes);
 app.use(ROUTES.CUSTOMERS.ROOT, customerRoutes);
+app.use(ROUTES.SALES.ROOT, saleRoutes);
 
 app.get('/', (req, res) => {
     res.send('Stockify API is running');
