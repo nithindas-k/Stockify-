@@ -9,6 +9,7 @@ import AdminInventoryPage from './pages/admin/AdminInventoryPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
 import InventoryPage from './pages/user/InventoryPage';
+import CustomersPage from './pages/user/CustomersPage';
 
 
 function App() {
@@ -25,7 +26,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/inventory" element={<InventoryPage />} />
-          <Route path="/customers" element={<div>Customers Page (Coming Soon)</div>} />
+          <Route path="/customers" element={<CustomersPage />} />
           <Route path="/sales" element={<div>Sales Page (Coming Soon)</div>} />
           <Route path="/reports" element={<div>Reports Page (Coming Soon)</div>} />
         </Route>

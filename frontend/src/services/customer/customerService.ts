@@ -10,12 +10,11 @@ export interface GetCustomersParams {
 
 export interface CustomerPayload {
     name: string;
-    email: string;
-    phone?: string;
-    address?: string;
+    mobile: string;
+    address: string;
 }
 
-/* ── Customer Service ───────────────────────────────────────── */
+
 export const customerService = {
     getAll: (params?: GetCustomersParams) =>
         apiClient.get(CUSTOMER_ROUTES.GET_ALL, { params }),
