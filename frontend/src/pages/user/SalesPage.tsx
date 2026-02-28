@@ -13,6 +13,7 @@ import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '../../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../../components/ui/alert-dialog';
 import { Label } from '../../components/ui/label';
 import { Spinner } from '../../components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
@@ -64,6 +65,8 @@ const SalesPage: React.FC = () => {
     const [formPaymentMethod, setFormPaymentMethod] = useState<'Cash' | 'Card' | 'UPI' | 'Other'>('Cash');
 
     const [formItems, setFormItems] = useState<{ productId: string, quantity: number, pricePerUnit: number }[]>([]);
+
+    const [isSaleConfirmOpen, setIsSaleConfirmOpen] = useState(false);
 
     // Fetch Base
     const fetchSales = async () => {
@@ -134,7 +137,7 @@ const SalesPage: React.FC = () => {
     }
 
 
-    const handleSaveSale = async () => {
+    const handleSaveSale = () => {
         if (formItems.length === 0) {
             toast.error('Please add at least one item');
             return;
@@ -146,6 +149,10 @@ const SalesPage: React.FC = () => {
             return;
         }
 
+        setIsSaleConfirmOpen(true);
+    };
+
+    const executeSaveSale = async () => {
         setSaving(true);
         try {
             const payload = {
@@ -158,6 +165,7 @@ const SalesPage: React.FC = () => {
 
             await saleService.create(payload);
             toast.success('Sale successfully recorded!');
+            setIsSaleConfirmOpen(false);
             setIsAddModalOpen(false);
             fetchSales();
             fetchDependencies(); // refresh stock numbers secretly behind the scenes
@@ -196,6 +204,23 @@ const SalesPage: React.FC = () => {
                         </span>
                     </div>
                 </header>
+
+                <AlertDialog open={isSaleConfirmOpen} onOpenChange={setIsSaleConfirmOpen}>
+                    <AlertDialogContent className="bg-card border-border rounded-xl">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Finalize Transaction?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Please review the details carefully. Once recorded, this transaction <strong>cannot be edited or deleted</strong> to maintain financial integrity.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-transparent border-white/10 text-foreground hover:bg-white/5">Back to Editor</AlertDialogCancel>
+                            <AlertDialogAction onClick={executeSaveSale} className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_rgba(157,0,255,0.3)]">
+                                Confirm & Complete Sale
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
 
                 <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
                     {/* Top Actions */}

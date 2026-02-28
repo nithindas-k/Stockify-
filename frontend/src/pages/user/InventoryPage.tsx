@@ -148,7 +148,7 @@ const InventoryPage: React.FC = () => {
                         <div className="relative w-full sm:w-96">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
-                                placeholder="Search by name, SKU, or description..."
+                                placeholder="Search by name, Product Code, or description..."
                                 className="pl-9 bg-card border-border border-white/5"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
@@ -178,11 +178,11 @@ const InventoryPage: React.FC = () => {
                                             <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="description" className="sm:text-right font-medium">Desc.</Label>
+                                            <Label htmlFor="description" className="sm:text-right font-medium">Description</Label>
                                             <Input id="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="sku" className="sm:text-right font-medium">SKU <span className="text-red-500">*</span></Label>
+                                            <Label htmlFor="sku" className="sm:text-right font-medium">Product Code (SKU) <span className="text-red-500">*</span></Label>
                                             <Input id="sku" value={formData.sku} onChange={(e) => setFormData({ ...formData, sku: e.target.value })} className="sm:col-span-3 border-border bg-background" />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
@@ -319,7 +319,7 @@ const InventoryPage: React.FC = () => {
                             <TableHeader className="bg-white/5">
                                 <TableRow className="hover:bg-transparent border-white/10">
                                     <TableHead className="font-semibold text-foreground">Product</TableHead>
-                                    <TableHead className="font-semibold text-foreground">SKU / Category</TableHead>
+                                    <TableHead className="font-semibold text-foreground">Code / Category</TableHead>
                                     <TableHead className="font-semibold text-foreground text-right">Price</TableHead>
                                     <TableHead className="font-semibold text-foreground text-right">Stock</TableHead>
                                     <TableHead className="font-semibold text-foreground text-right">Status</TableHead>
