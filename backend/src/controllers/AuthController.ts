@@ -16,13 +16,14 @@ export class AuthController implements IAuthController {
             const validatedData = LoginSchema.parse(req.body);
             const result = await this.authService.login(validatedData);
             res.status(200).json(result);
-        } catch (error: any) {
-            if (error.name === 'ZodError') {
-                const errorMessage = error.errors[0]?.message || 'Validation failed';
-                res.status(400).json({ message: errorMessage, errors: error.errors });
+        } catch (error: unknown) {
+            const err = error as any;
+            if (err.name === 'ZodError') {
+                const errorMessage = err.errors[0]?.message || 'Validation failed';
+                res.status(400).json({ message: errorMessage, errors: err.errors });
                 return;
             }
-            res.status(401).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });
+            res.status(401).json({ message: err.message || APP_MESSAGES.SERVER_ERROR });
         }
     };
 
@@ -31,13 +32,14 @@ export class AuthController implements IAuthController {
             const validatedData = RegisterSchema.parse(req.body);
             const result = await this.authService.register(validatedData);
             res.status(201).json(result);
-        } catch (error: any) {
-            if (error.name === 'ZodError') {
-                const errorMessage = error.errors[0]?.message || 'Validation failed';
-                res.status(400).json({ message: errorMessage, errors: error.errors });
+        } catch (error: unknown) {
+            const err = error as any;
+            if (err.name === 'ZodError') {
+                const errorMessage = err.errors[0]?.message || 'Validation failed';
+                res.status(400).json({ message: errorMessage, errors: err.errors });
                 return;
             }
-            res.status(400).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });
+            res.status(400).json({ message: err.message || APP_MESSAGES.SERVER_ERROR });
         }
     };
 }

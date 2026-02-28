@@ -7,8 +7,8 @@ import { inventoryService } from '../../services/inventory/inventoryService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
 import { NotificationBell } from '../../components/notifications/NotificationBell';
+import { PaymentProcessing } from '../../components/sales/PaymentProcessing';
 
-// Shadcn components
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
@@ -67,6 +67,7 @@ const SalesPage: React.FC = () => {
     const [formItems, setFormItems] = useState<{ productId: string, quantity: number, pricePerUnit: number }[]>([]);
 
     const [isSaleConfirmOpen, setIsSaleConfirmOpen] = useState(false);
+    const [showPaymentAnimation, setShowPaymentAnimation] = useState(false);
 
     // Fetch Base
     const fetchSales = async () => {
@@ -124,7 +125,7 @@ const SalesPage: React.FC = () => {
             const product = allProducts.find(p => p._id === value);
             newItems[index].productId = value;
             if (product) {
-                newItems[index].pricePerUnit = product.price; // Auto-fill current price
+                newItems[index].pricePerUnit = product.price;
             }
         } else {
             newItems[index] = { ...newItems[index], [field]: value };
@@ -158,22 +159,29 @@ const SalesPage: React.FC = () => {
             const payload = {
                 customerName: formCustomerName,
                 customerId: formCustomerId === 'cash' ? undefined : formCustomerId,
-                userId: user?.id || (user as any)?._id,
+                userId: user?.id,
                 paymentMethod: formPaymentMethod,
                 items: formItems.map(i => ({ productId: i.productId, quantity: i.quantity }))
             };
 
             await saleService.create(payload);
-            toast.success('Sale successfully recorded!');
             setIsSaleConfirmOpen(false);
-            setIsAddModalOpen(false);
+            setShowPaymentAnimation(true); // Trigger professional animation
+
+            // Clean up behind the scenes
             fetchSales();
-            fetchDependencies(); // refresh stock numbers secretly behind the scenes
+            fetchDependencies();
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to record sale');
-        } finally {
             setSaving(false);
         }
+    };
+
+    const handleAnimationComplete = () => {
+        setShowPaymentAnimation(false);
+        setIsAddModalOpen(false);
+        setSaving(false);
+        toast.success('Sale successfully recorded!');
     };
 
 
@@ -465,6 +473,12 @@ const SalesPage: React.FC = () => {
 
                 </main>
             </div>
+
+            <PaymentProcessing
+                isOpen={showPaymentAnimation}
+                onComplete={handleAnimationComplete}
+                amount={modalTotal}
+            />
         </div>
     );
 };
