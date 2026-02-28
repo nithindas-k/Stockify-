@@ -3,7 +3,7 @@
 Stockify is a professional inventory management application designed for speed and reliability. Built with the MERN stack (MongoDB, Express, React, Node.js), it includes real-time analytics, automated reporting, and a responsive interface.
 
 ## Live Deployment
-- **Frontend URL:** [https://stockify-one.vercel.app](https://stockify-one.vercel.app)
+- **Frontend URL:** [https://stockify-wine.vercel.app](https://stockify-wine.vercel.app)
 - **Backend API URL:** [https://stockify-liqj.onrender.com](https://stockify-liqj.onrender.com)
 
 ## Core Functionality
