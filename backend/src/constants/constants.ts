@@ -13,7 +13,7 @@ export const ROUTES = {
     AUTH: {
         ROOT: '/api/auth',
         LOGIN: '/login',
-        REGISTER: '/register',
+        SIGNUP: '/signup',
     },
     INVENTORY: {
         ROOT: '/api/inventory',

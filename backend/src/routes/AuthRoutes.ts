@@ -13,7 +13,7 @@ const authController = new AuthController(authService);
 
 
 router.post(ROUTES.AUTH.LOGIN, (req, res) => authController.login(req, res));
-router.post(ROUTES.AUTH.REGISTER, (req, res) => authController.register(req, res));
+router.post(ROUTES.AUTH.SIGNUP, (req, res) => authController.register(req, res));
 
 
 export default router;
