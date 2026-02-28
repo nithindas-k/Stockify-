@@ -18,7 +18,8 @@ export class AuthController implements IAuthController {
             res.status(200).json(result);
         } catch (error: any) {
             if (error.name === 'ZodError') {
-                res.status(400).json({ message: 'Validation failed', errors: error.errors });
+                const errorMessage = error.errors[0]?.message || 'Validation failed';
+                res.status(400).json({ message: errorMessage, errors: error.errors });
                 return;
             }
             res.status(401).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });
@@ -32,7 +33,8 @@ export class AuthController implements IAuthController {
             res.status(201).json(result);
         } catch (error: any) {
             if (error.name === 'ZodError') {
-                res.status(400).json({ message: 'Validation failed', errors: error.errors });
+                const errorMessage = error.errors[0]?.message || 'Validation failed';
+                res.status(400).json({ message: errorMessage, errors: error.errors });
                 return;
             }
             res.status(400).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });

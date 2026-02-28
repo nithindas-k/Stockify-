@@ -16,12 +16,12 @@ export class AuthService implements IAuthService {
         const user = await this.userRepository.findByEmail(credentials.email);
 
         if (!user) {
-            throw new Error(APP_MESSAGES.AUTH_FAILED);
+            throw new Error('User not found. Please check your email.');
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
         if (!isPasswordValid) {
-            throw new Error(APP_MESSAGES.AUTH_FAILED);
+            throw new Error('Incorrect password. Please try again.');
         }
 
         const token = jwt.sign(
