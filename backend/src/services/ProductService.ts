@@ -2,12 +2,15 @@ import { IProductService } from './interfaces/IProductService';
 import { IProductRepository } from '../repositories/interfaces/IProductRepository';
 import { IProduct } from '../models/Product';
 import { CreateProductDTO, UpdateProductDTO } from '../dtos/ProductDTO';
+import { NotificationService } from './NotificationService';
 
 export class ProductService implements IProductService {
     private productRepository: IProductRepository;
+    private notificationService: NotificationService | undefined;
 
-    constructor(productRepository: IProductRepository) {
+    constructor(productRepository: IProductRepository, notificationService?: NotificationService) {
         this.productRepository = productRepository;
+        this.notificationService = notificationService;
     }
 
     async createProduct(userId: string, data: CreateProductDTO): Promise<IProduct> {
@@ -15,7 +18,19 @@ export class ProductService implements IProductService {
         if (existing) {
             throw new Error(`Product with SKU ${data.sku} already exists.`);
         }
-        return await this.productRepository.create(userId, data);
+        const product = await this.productRepository.create(userId, data);
+
+
+        if (this.notificationService && product.quantity < 5) {
+            await this.notificationService.createLowStockNotification(
+                userId,
+                product._id.toString(),
+                product.name,
+                product.quantity
+            );
+        }
+
+        return product;
     }
 
     async getProductById(userId: string, id: string): Promise<IProduct> {
@@ -37,6 +52,17 @@ export class ProductService implements IProductService {
         }
         const updated = await this.productRepository.update(userId, id, data);
         if (!updated) throw new Error('Product not found');
+
+        // Check for low stock notification
+        if (this.notificationService && updated.quantity < 5) {
+            await this.notificationService.createLowStockNotification(
+                userId,
+                updated._id.toString(),
+                updated.name,
+                updated.quantity
+            );
+        }
+
         return updated;
     }
 

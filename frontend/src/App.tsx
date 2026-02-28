@@ -7,6 +7,7 @@ import InventoryPage from './pages/user/InventoryPage';
 import CustomersPage from './pages/user/CustomersPage';
 import SalesPage from './pages/user/SalesPage';
 import ReportsPage from './pages/user/ReportsPage';
+import NotificationsPage from './pages/user/NotificationsPage';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/sales" element={<SalesPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
 
 

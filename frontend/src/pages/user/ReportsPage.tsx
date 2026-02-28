@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Bell, Download, Printer, Mail, LayoutGrid } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
+import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
-// Shadcn components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
@@ -37,24 +37,21 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, subtitle }) => 
 const ReportsPage: React.FC = () => {
     const user = useAuthStore((s) => s.user);
 
-    // Sales Report state
     const [salesReport, setSalesReport] = useState<any>(null);
     const [salesLoading, setSalesLoading] = useState(false);
 
-    // Items Report state
     const [itemsReport, setItemsReport] = useState<any>(null);
     const [itemsLoading, setItemsLoading] = useState(false);
 
-    // Customer Ledger state
+
     const [ledgerReport, setLedgerReport] = useState<any>(null);
     const [ledgerLoading, setLedgerLoading] = useState(false);
 
-    // Dependencies
+
     const [customers, setCustomers] = useState<any[]>([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
     const [activeTab, setActiveTab] = useState('sales');
 
-    // Email Modal State
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [emailAddress, setEmailAddress] = useState('');
     const [emailing, setEmailing] = useState(false);
@@ -116,7 +113,7 @@ const ReportsPage: React.FC = () => {
         }
     }, [selectedCustomerId]);
 
-    // Export Utils
+
     const getTableId = () => `${activeTab}-table`;
     const getReportTitle = () => activeTab === 'sales' ? 'Sales Report' : activeTab === 'items' ? 'Inventory Items Report' : 'Customer Ledger';
 
@@ -196,9 +193,7 @@ const ReportsPage: React.FC = () => {
                         Analytics & Reports
                     </span>
                     <div className="flex-1" />
-                    <button className="relative p-2 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors">
-                        <Bell className="size-4" />
-                    </button>
+                    <NotificationBell />
                     <div className="size-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
                         <span className="text-xs font-bold text-primary">
                             {user?.name?.[0]?.toUpperCase() ?? 'U'}

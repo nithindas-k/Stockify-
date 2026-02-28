@@ -1,17 +1,18 @@
 import { SaleRepository } from '../repositories/SaleRepository';
 import { ProductRepository } from '../repositories/ProductRepository';
 import { CreateSaleDTO } from '../dtos/SaleDTO';
+import { NotificationService } from './NotificationService';
 
 export class SaleService {
     constructor(
         private saleRepository: SaleRepository,
-        private productRepository: ProductRepository
+        private productRepository: ProductRepository,
+        private notificationService: NotificationService
     ) { }
 
     async createSale(saleData: CreateSaleDTO): Promise<any> {
         let totalAmount = 0;
         const processedItems = [];
-
 
         for (const item of saleData.items) {
             const product = await this.productRepository.findById(saleData.userId as string, item.productId);
@@ -33,13 +34,23 @@ export class SaleService {
             });
         }
 
-        // 2. Decrease Stock in Inventory
         for (const item of saleData.items) {
             const product = await this.productRepository.findById(saleData.userId as string, item.productId);
             if (product) {
+                const newQuantity = product.quantity - item.quantity;
                 await this.productRepository.update(saleData.userId as string, item.productId, {
-                    quantity: product.quantity - item.quantity
+                    quantity: newQuantity
                 });
+
+                // Check for low stock notification (< 5 as requested or based on threshold)
+                if (newQuantity < 5) {
+                    await this.notificationService.createLowStockNotification(
+                        saleData.userId as string,
+                        product._id.toString(),
+                        product.name,
+                        newQuantity
+                    );
+                }
             }
         }
 

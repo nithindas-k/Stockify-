@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { Plus, Users, UserX, LayoutGrid, Search, MoreHorizontal, Edit, Trash2, Bell, Phone, MapPin } from 'lucide-react';
+import { Plus, Users, UserX, LayoutGrid, Search, MoreHorizontal, Edit, Trash2, Phone, MapPin } from 'lucide-react';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
+import { NotificationBell } from '../../components/notifications/NotificationBell';
 
 
 import { Button } from '../../components/ui/button';
@@ -129,9 +130,8 @@ const CustomersPage: React.FC = () => {
                     </span>
                     <div className="flex-1" />
 
-                    <button className="relative p-2 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors">
-                        <Bell className="size-4" />
-                    </button>
+                    <NotificationBell />
+
                     <div className="size-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
                         <span className="text-xs font-bold text-primary">
                             {user?.name?.[0]?.toUpperCase() ?? 'U'}

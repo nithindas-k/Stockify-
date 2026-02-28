@@ -27,4 +27,7 @@ export const ROUTES = {
     REPORTS: {
         ROOT: '/api/reports',
     },
+    NOTIFICATIONS: {
+        ROOT: '/api/notifications',
+    },
 };

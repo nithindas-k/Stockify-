@@ -2,8 +2,9 @@ import { useAuthStore } from '../../store/authStore';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import {
     Package, Users, TrendingUp,
-    AlertTriangle, BarChart3, Bell, ChevronRight,
+    AlertTriangle, BarChart3, ChevronRight,
 } from 'lucide-react';
+import { NotificationBell } from '../../components/notifications/NotificationBell';
 
 
 const stats = [
@@ -36,10 +37,8 @@ export default function Dashboard() {
                     </span>
                     <div className="flex-1" />
 
-                    <button className="relative p-2 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors">
-                        <Bell className="size-4" />
-                        <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary" />
-                    </button>
+                    <NotificationBell />
+
                     <div className="size-8 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
                         <span className="text-xs font-bold text-primary">
                             {user?.name?.[0]?.toUpperCase()}
