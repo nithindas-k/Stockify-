@@ -30,4 +30,7 @@ export const ROUTES = {
     NOTIFICATIONS: {
         ROOT: '/api/notifications',
     },
+    DASHBOARD: {
+        ROOT: '/api/dashboard',
+    },
 };

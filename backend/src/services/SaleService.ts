@@ -72,13 +72,13 @@ export class SaleService {
         return await this.saleRepository.create(finalSaleParam);
     }
 
-    async getSale(id: string): Promise<any> {
-        const sale = await this.saleRepository.findById(id);
+    async getSale(userId: string, id: string): Promise<any> {
+        const sale = await this.saleRepository.findById(userId, id);
         if (!sale) throw new Error('Sale not found');
         return sale;
     }
 
-    async getAllSales(query?: string): Promise<any[]> {
-        return await this.saleRepository.findAll(query);
+    async getAllSales(userId: string, query?: string): Promise<any[]> {
+        return await this.saleRepository.findAll(userId, query);
     }
 }

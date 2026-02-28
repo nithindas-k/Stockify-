@@ -35,7 +35,6 @@ export const SALES_ROUTES = {
     DELETE: (id: string) => `/sales/${id}`,
 } as const;
 
-/* ── Reports ────────────────────────────────────────────────── */
 export const REPORT_ROUTES = {
     SUMMARY: '/reports/summary',
     SALES: '/reports/sales',
@@ -43,4 +42,9 @@ export const REPORT_ROUTES = {
     CUSTOMERS: '/reports/customers',
     CUSTOMER_LEDGER: (id: string) => `/reports/customer/${id}`,
     EMAIL_REPORT: '/reports/email',
+} as const;
+
+
+export const DASHBOARD_ROUTES = {
+    STATS: '/dashboard/stats',
 } as const;

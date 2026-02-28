@@ -3,17 +3,17 @@ import Customer, { ICustomer } from '../models/Customer';
 import { CreateCustomerDTO, UpdateCustomerDTO } from '../dtos/CustomerDTO';
 
 export class CustomerRepository implements ICustomerRepository {
-    async create(data: CreateCustomerDTO): Promise<ICustomer> {
-        const customer = new Customer(data);
+    async create(userId: string, data: CreateCustomerDTO): Promise<ICustomer> {
+        const customer = new Customer({ ...data, userId });
         return await customer.save();
     }
 
-    async findById(id: string): Promise<ICustomer | null> {
-        return await Customer.findById(id);
+    async findById(userId: string, id: string): Promise<ICustomer | null> {
+        return await Customer.findOne({ _id: id, userId });
     }
 
-    async findAll(query?: string): Promise<ICustomer[]> {
-        const filter: any = {};
+    async findAll(userId: string, query?: string): Promise<ICustomer[]> {
+        const filter: any = { userId };
         if (query) {
             filter.$or = [
                 { name: { $regex: query, $options: 'i' } },
@@ -24,12 +24,12 @@ export class CustomerRepository implements ICustomerRepository {
         return await Customer.find(filter).sort({ createdAt: -1 });
     }
 
-    async update(id: string, data: UpdateCustomerDTO): Promise<ICustomer | null> {
-        return await Customer.findByIdAndUpdate(id, data, { new: true });
+    async update(userId: string, id: string, data: UpdateCustomerDTO): Promise<ICustomer | null> {
+        return await Customer.findOneAndUpdate({ _id: id, userId }, data, { new: true });
     }
 
-    async delete(id: string): Promise<boolean> {
-        const result = await Customer.findByIdAndDelete(id);
+    async delete(userId: string, id: string): Promise<boolean> {
+        const result = await Customer.findOneAndDelete({ _id: id, userId });
         return !!result;
     }
 }

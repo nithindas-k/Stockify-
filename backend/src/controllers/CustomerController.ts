@@ -1,50 +1,56 @@
 import { Request, Response } from 'express';
 import { CustomerService } from '../services/CustomerService';
+import { AuthRequest } from '../middleware/authMiddleware';
 
 export class CustomerController {
     constructor(private customerService: CustomerService) { }
 
-    createCustomer = async (req: Request, res: Response): Promise<void> => {
+    createCustomer = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const customer = await this.customerService.createCustomer(req.body);
+            const userId = req.user.id;
+            const customer = await this.customerService.createCustomer(userId, req.body);
             res.status(201).json({ message: 'Customer created successfully', data: customer });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
         }
     };
 
-    getCustomer = async (req: Request, res: Response): Promise<void> => {
+    getCustomer = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const customer = await this.customerService.getCustomer(req.params.id as string);
+            const userId = req.user.id;
+            const customer = await this.customerService.getCustomer(userId, req.params.id as string);
             res.status(200).json({ data: customer });
         } catch (error: any) {
             res.status(404).json({ message: error.message });
         }
     };
 
-    getAllCustomers = async (req: Request, res: Response): Promise<void> => {
+    getAllCustomers = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
+            const userId = req.user.id;
             const query = req.query.search as string;
-            const customers = await this.customerService.getAllCustomers(query);
+            const customers = await this.customerService.getAllCustomers(userId, query);
             res.status(200).json({ data: customers });
         } catch (error: any) {
             res.status(500).json({ message: error.message });
         }
     };
 
-    updateCustomer = async (req: Request, res: Response): Promise<void> => {
+    updateCustomer = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const customer = await this.customerService.updateCustomer(req.params.id as string, req.body);
+            const userId = req.user.id;
+            const customer = await this.customerService.updateCustomer(userId, req.params.id as string, req.body);
             res.status(200).json({ message: 'Customer updated successfully', data: customer });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
         }
     };
 
-    deleteCustomer = async (req: Request, res: Response): Promise<void> => {
+    deleteCustomer = async (req: AuthRequest, res: Response): Promise<void> => {
         try {
+            const userId = req.user.id;
             const id = req.params.id as string;
-            await this.customerService.deleteCustomer(id);
+            await this.customerService.deleteCustomer(userId, id);
             res.status(200).json({ message: 'Customer deleted successfully' });
         } catch (error: any) {
             res.status(400).json({ message: error.message });

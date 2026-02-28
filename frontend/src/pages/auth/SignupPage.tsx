@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth/authService';
 import { ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ const SignupPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+    const setAuth = useAuthStore((s) => s.setAuth);
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,9 +31,10 @@ const SignupPage: React.FC = () => {
         setLoading(true);
 
         try {
-            await authService.signup({ name, email, password });
-            toast.success('Registration successful. You can now log in.');
-            navigate('/login');
+            const res = await authService.signup({ name, email, password });
+            setAuth(res.data.user, res.data.token);
+            toast.success('Welcome to Stockify! Account created successfully.');
+            navigate('/');
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Something went wrong. Please try again later.');
         } finally {
