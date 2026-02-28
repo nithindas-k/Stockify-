@@ -1,7 +1,8 @@
 import { ICustomerRepository } from '../repositories/interfaces/ICustomerRepository';
 import { CreateCustomerDTO, UpdateCustomerDTO } from '../dtos/CustomerDTO';
+import { ICustomerService } from './interfaces/ICustomerService';
 
-export class CustomerService {
+export class CustomerService implements ICustomerService {
     constructor(private customerRepository: ICustomerRepository) { }
 
     async createCustomer(userId: string, data: CreateCustomerDTO) {

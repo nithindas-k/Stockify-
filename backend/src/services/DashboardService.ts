@@ -1,8 +1,9 @@
 import { IProductRepository } from '../repositories/interfaces/IProductRepository';
 import { ISaleRepository } from '../repositories/interfaces/ISaleRepository';
 import { ICustomerRepository } from '../repositories/interfaces/ICustomerRepository';
+import { IDashboardService } from './interfaces/IDashboardService';
 
-export class DashboardService {
+export class DashboardService implements IDashboardService {
     constructor(
         private productRepo: IProductRepository,
         private saleRepo: ISaleRepository,
@@ -12,7 +13,7 @@ export class DashboardService {
     async getStats(userId: string) {
         const [products, sales, customers, lowStockItems] = await Promise.all([
             this.productRepo.findAll(userId),
-            this.saleRepo.findAll(userId), 
+            this.saleRepo.findAll(userId),
             this.customerRepo.findAll(userId),
             this.productRepo.findLowStock(userId)
         ]);

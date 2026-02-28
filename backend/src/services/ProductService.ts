@@ -2,13 +2,13 @@ import { IProductService } from './interfaces/IProductService';
 import { IProductRepository } from '../repositories/interfaces/IProductRepository';
 import { IProduct } from '../models/Product';
 import { CreateProductDTO, UpdateProductDTO } from '../dtos/ProductDTO';
-import { NotificationService } from './NotificationService';
+import { INotificationService } from './interfaces/INotificationService';
 
 export class ProductService implements IProductService {
     private productRepository: IProductRepository;
-    private notificationService: NotificationService | undefined;
+    private notificationService: INotificationService | undefined;
 
-    constructor(productRepository: IProductRepository, notificationService?: NotificationService) {
+    constructor(productRepository: IProductRepository, notificationService?: INotificationService) {
         this.productRepository = productRepository;
         this.notificationService = notificationService;
     }

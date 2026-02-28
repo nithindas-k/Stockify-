@@ -2,10 +2,15 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
-    user?: any;
+    user: {
+        id: string;
+        email?: string;
+        name?: string;
+        [key: string]: any;
+    };
 }
 
-export const protect = (req: AuthRequest, res: Response, next: NextFunction): void => {
+export const protect = (req: Request, res: Response, next: NextFunction): void => {
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -15,8 +20,8 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction): vo
                 throw new Error('Not authorized, token failed');
             }
             const secret: string = process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET || 'fallback_secret';
-            const decoded = jwt.verify(token, secret);
-            req.user = decoded;
+            const decoded = jwt.verify(token, secret) as any;
+            (req as any).user = decoded;
             next();
         } catch (error) {
             res.status(401).json({ message: 'Not authorized, token failed' });

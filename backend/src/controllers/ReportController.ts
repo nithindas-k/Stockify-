@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { ReportService } from '../services/ReportService';
+import { IReportService } from '../services/interfaces/IReportService';
 import { MailService } from '../utils/MailService';
 
 export class ReportController {
-    constructor(private reportService: ReportService) { }
+    constructor(private reportService: IReportService) { }
 
     getSalesReport = async (req: Request, res: Response): Promise<void> => {
         try {

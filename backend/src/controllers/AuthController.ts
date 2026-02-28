@@ -11,7 +11,7 @@ export class AuthController implements IAuthController {
         this.authService = authService;
     }
 
-    async login(req: express.Request, res: express.Response): Promise<void> {
+    login = async (req: express.Request, res: express.Response): Promise<void> => {
         try {
             const validatedData = LoginSchema.parse(req.body);
             const result = await this.authService.login(validatedData);
@@ -24,9 +24,9 @@ export class AuthController implements IAuthController {
             }
             res.status(401).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });
         }
-    }
+    };
 
-    async register(req: express.Request, res: express.Response): Promise<void> {
+    register = async (req: express.Request, res: express.Response): Promise<void> => {
         try {
             const validatedData = RegisterSchema.parse(req.body);
             const result = await this.authService.register(validatedData);
@@ -39,5 +39,5 @@ export class AuthController implements IAuthController {
             }
             res.status(400).json({ message: error.message || APP_MESSAGES.SERVER_ERROR });
         }
-    }
+    };
 }

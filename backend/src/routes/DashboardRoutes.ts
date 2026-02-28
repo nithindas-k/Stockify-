@@ -17,6 +17,6 @@ const dashboardController = new DashboardController(dashboardService);
 
 router.use(protect);
 
-router.get('/stats', (req, res) => dashboardController.getStats(req as any, res));
+router.get('/stats', dashboardController.getStats);
 
 export default router;

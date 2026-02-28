@@ -10,7 +10,7 @@ const notificationRepository = new NotificationRepository();
 const notificationService = new NotificationService(notificationRepository);
 const notificationController = new NotificationController(notificationService);
 
-router.get('/', protect, (req, res) => notificationController.getAll(req, res));
-router.delete('/', protect, (req, res) => notificationController.clearAll(req, res));
+router.get('/', protect, notificationController.getAll);
+router.delete('/', protect, notificationController.clearAll);
 
 export default router;

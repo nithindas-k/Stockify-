@@ -1,39 +1,32 @@
-import Sale from '../models/Sale';
-import Product from '../models/Product';
-import Customer from '../models/Customer';
-import mongoose from 'mongoose';
+import { ISaleRepository } from '../repositories/interfaces/ISaleRepository';
+import { IProductRepository } from '../repositories/interfaces/IProductRepository';
+import { ICustomerRepository } from '../repositories/interfaces/ICustomerRepository';
+import { IReportService } from './interfaces/IReportService';
 
-export class ReportService {
+export class ReportService implements IReportService {
+    constructor(
+        private saleRepo: ISaleRepository,
+        private productRepo: IProductRepository,
+        private customerRepo: ICustomerRepository
+    ) { }
 
-  
     async getSalesReport(startDate?: string, endDate?: string): Promise<any> {
-        let matchStage: any = {};
+        // We'll use the repositories to get the data
+        const sales = await this.saleRepo.findAll('', startDate, endDate);
 
-        if (startDate || endDate) {
-            matchStage.saleDate = {};
-            if (startDate) matchStage.saleDate.$gte = new Date(startDate);
-            if (endDate) matchStage.saleDate.$lte = new Date(endDate);
-        }
-
-        const sales = await Sale.find(matchStage).sort({ saleDate: -1 }).populate('items.productId');
-
-        
-        const aggregation = await Sale.aggregate([
-            { $match: matchStage },
-            { $group: { _id: null, totalRevenue: { $sum: "$totalAmount" }, totalSales: { $sum: 1 } } }
-        ]);
-
-        const summary = aggregation.length > 0 ? aggregation[0] : { totalRevenue: 0, totalSales: 0 };
+        const totalRevenue = sales.reduce((acc, sale) => acc + sale.totalAmount, 0);
 
         return {
-            summary,
+            summary: {
+                totalRevenue,
+                totalSales: sales.length
+            },
             sales
         };
     }
 
-    
     async getItemsReport(): Promise<any> {
-        const products = await Product.find().sort({ quantity: 1 });
+        const products = await this.productRepo.findAll('');
 
         let totalInventoryValue = 0;
         let lowStockCount = 0;
@@ -55,31 +48,20 @@ export class ReportService {
         };
     }
 
-    
     async getCustomerLedger(customerId: string): Promise<any> {
-        if (!mongoose.Types.ObjectId.isValid(customerId)) {
-            throw new Error('Invalid customer ID');
-        }
+        const customer = await this.customerRepo.findById('', customerId);
+        if (!customer) throw new Error('Customer not found');
 
-        const customer = await Customer.findById(customerId);
-        if (!customer) {
-            throw new Error('Customer not found');
-        }
+        const transactions = await this.saleRepo.findByCustomerId('', customerId);
 
-        const transactions = await Sale.find({ customerId: customer._id })
-            .sort({ saleDate: -1 })
-            .populate('items.productId');
-
-        const aggregation = await Sale.aggregate([
-            { $match: { customerId: customer._id } },
-            { $group: { _id: null, totalSpent: { $sum: "$totalAmount" }, totalPurchases: { $sum: 1 } } }
-        ]);
-
-        const summary = aggregation.length > 0 ? aggregation[0] : { totalSpent: 0, totalPurchases: 0 };
+        const totalSpent = transactions.reduce((acc, sale) => acc + sale.totalAmount, 0);
 
         return {
             customer,
-            summary,
+            summary: {
+                totalSpent,
+                totalPurchases: transactions.length
+            },
             transactions
         };
     }

@@ -1,12 +1,9 @@
-import { NotificationRepository } from '../repositories/NotificationRepository';
+import { INotificationRepository } from '../repositories/interfaces/INotificationRepository';
 import { INotification } from '../models/Notification';
+import { INotificationService } from './interfaces/INotificationService';
 
-export class NotificationService {
-    private notificationRepository: NotificationRepository;
-
-    constructor(notificationRepository: NotificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
+export class NotificationService implements INotificationService {
+    constructor(private notificationRepository: INotificationRepository) { }
 
     async getNotifications(userId: string): Promise<INotification[]> {
         return await this.notificationRepository.findAll(userId);

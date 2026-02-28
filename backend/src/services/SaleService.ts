@@ -1,13 +1,14 @@
-import { SaleRepository } from '../repositories/SaleRepository';
-import { ProductRepository } from '../repositories/ProductRepository';
+import { ISaleRepository } from '../repositories/interfaces/ISaleRepository';
+import { IProductRepository } from '../repositories/interfaces/IProductRepository';
 import { CreateSaleDTO } from '../dtos/SaleDTO';
-import { NotificationService } from './NotificationService';
+import { INotificationService } from './interfaces/INotificationService';
+import { ISaleService } from './interfaces/ISaleService';
 
-export class SaleService {
+export class SaleService implements ISaleService {
     constructor(
-        private saleRepository: SaleRepository,
-        private productRepository: ProductRepository,
-        private notificationService: NotificationService
+        private saleRepository: ISaleRepository,
+        private productRepository: IProductRepository,
+        private notificationService: INotificationService
     ) { }
 
     async createSale(saleData: CreateSaleDTO): Promise<any> {

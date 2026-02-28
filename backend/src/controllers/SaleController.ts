@@ -1,13 +1,13 @@
-import { Response } from 'express';
-import { SaleService } from '../services/SaleService';
+import { Request, Response } from 'express';
+import { ISaleService } from '../services/interfaces/ISaleService';
 import { AuthRequest } from '../middleware/authMiddleware';
 
 export class SaleController {
-    constructor(private saleService: SaleService) { }
+    constructor(private saleService: ISaleService) { }
 
-    createSale = async (req: AuthRequest, res: Response): Promise<void> => {
+    createSale = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = (req as AuthRequest).user.id;
             const sale = await this.saleService.createSale({ ...req.body, userId });
             res.status(201).json({ message: 'Sale completed successfully', data: sale });
         } catch (error: any) {
@@ -15,9 +15,9 @@ export class SaleController {
         }
     };
 
-    getSale = async (req: AuthRequest, res: Response): Promise<void> => {
+    getSale = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = (req as AuthRequest).user.id;
             const sale = await this.saleService.getSale(userId, req.params.id as string);
             res.status(200).json({ data: sale });
         } catch (error: any) {
@@ -25,9 +25,9 @@ export class SaleController {
         }
     };
 
-    getAllSales = async (req: AuthRequest, res: Response): Promise<void> => {
+    getAllSales = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = (req as AuthRequest).user.id;
             const query = req.query.search as string;
             const sales = await this.saleService.getAllSales(userId, query);
             res.status(200).json({ data: sales });
