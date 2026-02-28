@@ -4,7 +4,7 @@ Stockify is a professional inventory management application designed for speed a
 
 ## Live Deployment
 - **Frontend URL:** [https://stockify-wine.vercel.app](https://stockify-wine.vercel.app)
-- **Backend API URL:** [https://stockify-liqj.onrender.com](https://stockify-liqj.onrender.com)
+- **Backend API URL:** [https://stockify-1iqp.onrender.com](https://stockify-1iqp.onrender.com)
 
 ## Core Functionality
 - **Inventory Management:** Centralized tracking of stock levels, SKU codes, and low-stock indicators.
