@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, Package, Users, ShoppingCart,
-    BarChart3, LogOut, Bell, Settings, PanelLeft,
+    BarChart3, LogOut, Bell,  PanelLeft,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import {
@@ -31,7 +31,6 @@ const navMain = [
 ];
 const navAccount = [
     { icon: Bell, label: 'Notifications', path: '/notifications' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 /* ─── inner body (same HTML for both render modes) ─────────── */
