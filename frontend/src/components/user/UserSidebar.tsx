@@ -5,6 +5,16 @@ import {
     BarChart3, LogOut, Bell, Settings, PanelLeft,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '../ui/alert-dialog';
 
 /* ─── constants ────────────────────────────────────────────── */
 const SIDEBAR_W = 280;
@@ -34,6 +44,8 @@ interface SidebarInnerProps {
 }
 
 function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInnerProps) {
+    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+
     return (
         <>
             {/* Logo */}
@@ -130,16 +142,32 @@ function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInne
                         </div>
                     </div>
                 )}
-                <button
-                    onClick={logout}
-                    title={!showLabels ? 'Logout' : undefined}
-                    className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium
-                        text-red-400 hover:bg-red-500/10 transition-colors
-                        ${showLabels ? '' : 'justify-center'}`}
-                >
-                    <LogOut className="size-4 shrink-0" />
-                    {showLabels && <span>Logout</span>}
-                </button>
+                <AlertDialog open={isLogoutConfirmOpen} onOpenChange={setIsLogoutConfirmOpen}>
+                    <button
+                        onClick={() => setIsLogoutConfirmOpen(true)}
+                        title={!showLabels ? 'Logout' : undefined}
+                        className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium
+                            text-red-400 hover:bg-red-500/10 transition-colors
+                            ${showLabels ? '' : 'justify-center'}`}
+                    >
+                        <LogOut className="size-4 shrink-0" />
+                        {showLabels && <span>Logout</span>}
+                    </button>
+                    <AlertDialogContent className="bg-card border-border rounded-xl">
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Ready to leave?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure you want to log out? You will need to sign back in to access your data.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-transparent border-white/10 text-foreground hover:bg-white/5">Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={logout} className="bg-red-500 hover:bg-red-600 text-white shadow-md">
+                                Logout
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </>
     );
