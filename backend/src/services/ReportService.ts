@@ -10,9 +10,9 @@ export class ReportService implements IReportService {
         private customerRepo: ICustomerRepository
     ) { }
 
-    async getSalesReport(startDate?: string, endDate?: string): Promise<any> {
+    async getSalesReport(userId: string, startDate?: string, endDate?: string): Promise<any> {
         // We'll use the repositories to get the data
-        const sales = await this.saleRepo.findAll('', startDate, endDate);
+        const sales = await this.saleRepo.findAll(userId, '', startDate, endDate);
 
         const totalRevenue = sales.reduce((acc, sale) => acc + sale.totalAmount, 0);
 
@@ -25,8 +25,8 @@ export class ReportService implements IReportService {
         };
     }
 
-    async getItemsReport(): Promise<any> {
-        const products = await this.productRepo.findAll('');
+    async getItemsReport(userId: string): Promise<any> {
+        const products = await this.productRepo.findAll(userId);
 
         let totalInventoryValue = 0;
         let lowStockCount = 0;
@@ -48,11 +48,11 @@ export class ReportService implements IReportService {
         };
     }
 
-    async getCustomerLedger(customerId: string): Promise<any> {
-        const customer = await this.customerRepo.findById('', customerId);
+    async getCustomerLedger(userId: string, customerId: string): Promise<any> {
+        const customer = await this.customerRepo.findById(userId, customerId);
         if (!customer) throw new Error('Customer not found');
 
-        const transactions = await this.saleRepo.findByCustomerId('', customerId);
+        const transactions = await this.saleRepo.findByCustomerId(userId, customerId);
 
         const totalSpent = transactions.reduce((acc, sale) => acc + sale.totalAmount, 0);
 

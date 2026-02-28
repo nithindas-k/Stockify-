@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import { IReportService } from '../services/interfaces/IReportService';
 import { MailService } from '../utils/MailService';
+import { AuthRequest } from '../middleware/authMiddleware';
 
 export class ReportController {
     constructor(private reportService: IReportService) { }
 
     getSalesReport = async (req: Request, res: Response): Promise<void> => {
         try {
+            const userId = (req as AuthRequest).user.id;
             const { startDate, endDate } = req.query;
-            const report = await this.reportService.getSalesReport(startDate as string, endDate as string);
+            const report = await this.reportService.getSalesReport(userId, startDate as string, endDate as string);
             res.status(200).json({ data: report });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
@@ -17,7 +19,8 @@ export class ReportController {
 
     getItemsReport = async (req: Request, res: Response): Promise<void> => {
         try {
-            const report = await this.reportService.getItemsReport();
+            const userId = (req as AuthRequest).user.id;
+            const report = await this.reportService.getItemsReport(userId);
             res.status(200).json({ data: report });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
@@ -26,7 +29,8 @@ export class ReportController {
 
     getCustomerLedger = async (req: Request, res: Response): Promise<void> => {
         try {
-            const report = await this.reportService.getCustomerLedger(req.params.customerId as string);
+            const userId = (req as AuthRequest).user.id;
+            const report = await this.reportService.getCustomerLedger(userId, req.params.customerId as string);
             res.status(200).json({ data: report });
         } catch (error: any) {
             res.status(404).json({ message: error.message });
