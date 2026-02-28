@@ -18,7 +18,7 @@ const SignupPage: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const handleSendOTP = async (e: React.FormEvent) => {
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
@@ -29,8 +29,9 @@ const SignupPage: React.FC = () => {
         setLoading(true);
 
         try {
-            await authService.sendOtp({ email });
-            navigate('/verify', { state: { name, email, password } });
+            await authService.signup({ name, email, password });
+            toast.success('Registration successful. You can now log in.');
+            navigate('/login');
         } catch (err: any) {
             toast.error(err.response?.data?.message || 'Something went wrong. Please try again later.');
         } finally {
@@ -60,7 +61,7 @@ const SignupPage: React.FC = () => {
                     </CardHeader>
 
                     <CardContent className="space-y-4">
-                        <form onSubmit={handleSendOTP} className="space-y-4">
+                        <form onSubmit={handleSignup} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
                                 <Input

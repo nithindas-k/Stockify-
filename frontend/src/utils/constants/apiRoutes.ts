@@ -2,24 +2,10 @@
 export const AUTH_ROUTES = {
     LOGIN: '/auth/login',
     SIGNUP: '/auth/signup',
-    SEND_OTP: '/auth/send-otp',
-    VERIFY_OTP: '/auth/verify-otp',
-    RESEND_OTP: '/auth/resend-otp',
     LOGOUT: '/auth/logout',
     ME: '/auth/me',
 } as const;
 
-export const ADMIN_AUTH_ROUTES = {
-    LOGIN: '/auth/admin/login',
-    LOGOUT: '/auth/admin/logout',
-} as const;
-export const USER_ROUTES = {
-    GET_ALL: '/admin/users',
-    GET_BY_ID: (id: string) => `/admin/users/${id}`,
-    UPDATE: (id: string) => `/admin/users/${id}`,
-    DELETE: (id: string) => `/admin/users/${id}`,
-    TOGGLE_STATUS: (id: string) => `/admin/users/${id}/status`,
-} as const;
 
 /* ── Inventory ──────────────────────────────────────────────── */
 export const INVENTORY_ROUTES = {

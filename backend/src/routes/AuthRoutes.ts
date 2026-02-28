@@ -13,10 +13,7 @@ const authController = new AuthController(authService);
 
 
 router.post(ROUTES.AUTH.LOGIN, (req, res) => authController.login(req, res));
-router.post(ROUTES.AUTH.ADMIN_LOGIN, (req, res) => authController.adminLogin(req, res));
 router.post(ROUTES.AUTH.REGISTER, (req, res) => authController.register(req, res));
-router.post(ROUTES.AUTH.SEND_OTP, (req, res) => authController.sendOTP(req, res));
-router.post(ROUTES.AUTH.VERIFY_OTP, (req, res) => authController.verifyOTP(req, res));
 
 
 export default router;

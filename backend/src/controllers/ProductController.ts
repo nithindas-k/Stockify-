@@ -12,8 +12,9 @@ export class ProductController implements IProductController {
 
     async create(req: express.Request, res: express.Response): Promise<void> {
         try {
+            const userId = (req as any).user.id;
             const validatedData = CreateProductSchema.parse(req.body);
-            const product = await this.productService.createProduct(validatedData);
+            const product = await this.productService.createProduct(userId, validatedData);
             res.status(201).json(product);
         } catch (error: any) {
             if (error.name === 'ZodError') {
@@ -26,8 +27,10 @@ export class ProductController implements IProductController {
 
     async getAll(req: express.Request, res: express.Response): Promise<void> {
         try {
+            const userId = (req as any).user.id;
             const { search, category } = req.query;
             const products = await this.productService.getAllProducts(
+                userId,
                 search as string | undefined,
                 category as string | undefined
             );
@@ -39,7 +42,8 @@ export class ProductController implements IProductController {
 
     async getById(req: express.Request, res: express.Response): Promise<void> {
         try {
-            const product = await this.productService.getProductById(req.params.id as string);
+            const userId = (req as any).user.id;
+            const product = await this.productService.getProductById(userId, req.params.id as string);
             res.status(200).json(product);
         } catch (error: any) {
             res.status(404).json({ message: error.message || 'Product not found' });
@@ -48,8 +52,9 @@ export class ProductController implements IProductController {
 
     async update(req: express.Request, res: express.Response): Promise<void> {
         try {
+            const userId = (req as any).user.id;
             const validatedData = UpdateProductSchema.parse(req.body);
-            const product = await this.productService.updateProduct(req.params.id as string, validatedData);
+            const product = await this.productService.updateProduct(userId, req.params.id as string, validatedData);
             res.status(200).json(product);
         } catch (error: any) {
             if (error.name === 'ZodError') {
@@ -62,7 +67,8 @@ export class ProductController implements IProductController {
 
     async delete(req: express.Request, res: express.Response): Promise<void> {
         try {
-            await this.productService.deleteProduct(req.params.id as string);
+            const userId = (req as any).user.id;
+            await this.productService.deleteProduct(userId, req.params.id as string);
             res.status(200).json({ message: 'Product deleted successfully' });
         } catch (error: any) {
             res.status(404).json({ message: error.message || 'Product not found' });
@@ -71,7 +77,8 @@ export class ProductController implements IProductController {
 
     async getLowStock(req: express.Request, res: express.Response): Promise<void> {
         try {
-            const products = await this.productService.getLowStockProducts();
+            const userId = (req as any).user.id;
+            const products = await this.productService.getLowStockProducts(userId);
             res.status(200).json(products);
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Error fetching low stock' });

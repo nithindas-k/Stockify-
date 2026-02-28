@@ -14,7 +14,7 @@ export class SaleService {
 
 
         for (const item of saleData.items) {
-            const product = await this.productRepository.findById(item.productId);
+            const product = await this.productRepository.findById(saleData.userId as string, item.productId);
             if (!product) {
                 throw new Error(`Product with ID ${item.productId} not found`);
             }
@@ -35,9 +35,9 @@ export class SaleService {
 
         // 2. Decrease Stock in Inventory
         for (const item of saleData.items) {
-            const product = await this.productRepository.findById(item.productId);
+            const product = await this.productRepository.findById(saleData.userId as string, item.productId);
             if (product) {
-                await this.productRepository.update(item.productId, {
+                await this.productRepository.update(saleData.userId as string, item.productId, {
                     quantity: product.quantity - item.quantity
                 });
             }

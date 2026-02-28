@@ -5,32 +5,31 @@ import User from '../models/User';
 
 dotenv.config();
 
-const seedAdmin = async () => {
+const seedUser = async () => {
     try {
         const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stockify';
         await mongoose.connect(mongoURI);
         console.log('Connected to MongoDB for seeding...');
 
-        const adminExists = await User.findOne({ email: 'admin@stockify.com' });
-        if (adminExists) {
-            console.log('Admin user already exists. Skipping seed.');
+        const testExists = await User.findOne({ email: 'test@example.com' });
+        if (testExists) {
+            console.log('Test user already exists. Skipping seed.');
             return;
         }
 
-        const hashedPassword = await bcrypt.hash('admin123', 10);
+        const hashedPassword = await bcrypt.hash('password123', 10);
         await User.create({
-            name: 'System Admin',
-            email: 'admin@stockify.com',
+            name: 'Test User',
+            email: 'test@example.com',
             password: hashedPassword,
-            role: 'admin',
         });
 
-        console.log('Admin user created successfully: admin@stockify.com / admin123');
+        console.log('Test user created successfully: test@example.com / password123');
     } catch (err) {
-        console.error('Error seeding admin user:', err);
+        console.error('Error seeding test user:', err);
     } finally {
         await mongoose.connection.close();
     }
 };
 
-seedAdmin();
+seedUser();

@@ -10,42 +10,42 @@ export class ProductService implements IProductService {
         this.productRepository = productRepository;
     }
 
-    async createProduct(data: CreateProductDTO): Promise<IProduct> {
-        const existing = await this.productRepository.findBySku(data.sku);
+    async createProduct(userId: string, data: CreateProductDTO): Promise<IProduct> {
+        const existing = await this.productRepository.findBySku(userId, data.sku);
         if (existing) {
             throw new Error(`Product with SKU ${data.sku} already exists.`);
         }
-        return await this.productRepository.create(data);
+        return await this.productRepository.create(userId, data);
     }
 
-    async getProductById(id: string): Promise<IProduct> {
-        const product = await this.productRepository.findById(id);
+    async getProductById(userId: string, id: string): Promise<IProduct> {
+        const product = await this.productRepository.findById(userId, id);
         if (!product) throw new Error('Product not found');
         return product;
     }
 
-    async getAllProducts(query?: string, category?: string): Promise<IProduct[]> {
-        return await this.productRepository.findAll(query, category);
+    async getAllProducts(userId: string, query?: string, category?: string): Promise<IProduct[]> {
+        return await this.productRepository.findAll(userId, query, category);
     }
 
-    async updateProduct(id: string, data: UpdateProductDTO): Promise<IProduct> {
+    async updateProduct(userId: string, id: string, data: UpdateProductDTO): Promise<IProduct> {
         if (data.sku) {
-            const existing = await this.productRepository.findBySku(data.sku);
+            const existing = await this.productRepository.findBySku(userId, data.sku);
             if (existing && existing._id.toString() !== id) {
                 throw new Error(`Product with SKU ${data.sku} already exists.`);
             }
         }
-        const updated = await this.productRepository.update(id, data);
+        const updated = await this.productRepository.update(userId, id, data);
         if (!updated) throw new Error('Product not found');
         return updated;
     }
 
-    async deleteProduct(id: string): Promise<void> {
-        const deleted = await this.productRepository.delete(id);
+    async deleteProduct(userId: string, id: string): Promise<void> {
+        const deleted = await this.productRepository.delete(userId, id);
         if (!deleted) throw new Error('Product not found');
     }
 
-    async getLowStockProducts(): Promise<IProduct[]> {
-        return await this.productRepository.findLowStock();
+    async getLowStockProducts(userId: string): Promise<IProduct[]> {
+        return await this.productRepository.findLowStock(userId);
     }
 }
