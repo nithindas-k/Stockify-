@@ -1,98 +1,99 @@
 # Stockify - Professional Inventory Management System
 
-Stockify is a modern, high-performance inventory management application designed for speed and reliability. Built with the MERN stack (MongoDB, Express, React, Node.js), it features a premium dark UI, real-time analytics, and professional-grade reporting.
+Stockify is a professional inventory management application designed for speed and reliability. Built with the MERN stack (MongoDB, Express, React, Node.js), it includes real-time analytics, automated reporting, and a responsive interface.
 
-## 🚀 Live Demo
-- **Frontend (Vercel):** [https://stockify-one.vercel.app](https://stockify-one.vercel.app)
-- **Backend (Render):** [https://stockify-liqj.onrender.com](https://stockify-liqj.onrender.com)
+## Live Deployment
+- **Frontend URL:** [https://stockify-one.vercel.app](https://stockify-one.vercel.app)
+- **Backend API URL:** [https://stockify-liqj.onrender.com](https://stockify-liqj.onrender.com)
 
-## ✨ Key Features
-- **Smart Inventory:** Track stock levels, SKU codes, and low-stock alerts.
-- **Real-time Sales:** Record transactions with a professional Point of Sale (POS) interface.
-- **Reporting Engine:** Generate Sales, Inventory, and Customer Ledger reports.
-- **Export Options:** Download reports in PDF, Excel, or print directly.
-- **Email System:** Securely email reports to stakeholders via SMTP.
-- **Premium UI:** Fully responsive dark-mode interface with Framer Motion animations.
+## Core Functionality
+- **Inventory Management:** Centralized tracking of stock levels, SKU codes, and low-stock indicators.
+- **Sales Operations:** Point of Sale (POS) interface for recording real-time transactions.
+- **Advanced Reporting:** Generation of sales summaries, inventory status, and customer ledgers.
+- **Data Export:** Support for downloading reports in PDF and Excel formats.
+- **Email Integration:** Secure delivery of reports to stakeholders via SMTP.
+- **Responsive Design:** Optimized user interface for desktop, tablet, and mobile browsers.
 
-## 🛠️ Tech Stack
-- **Frontend:** React 19, Vite, Tailwind CSS 4, Shadcn/UI, Lucide icons, Framer Motion.
+## Technical Architecture
+- **Frontend:** React 19, Vite, Tailwind CSS, Shadcn/UI, Framer Motion.
 - **Backend:** Node.js, Express, TypeScript.
-- **Database:** MongoDB (using Mongoose).
+- **Database:** MongoDB Atlas (Mongoose ODM).
 - **State Management:** Zustand.
-- **Authentication:** JWT (JSON Web Tokens).
+- **Security:** JWT Authentication, Environment variable protection.
 
 ---
 
-## 💻 Local Setup Instructions
+## Local Development Setup
 
-Follow these steps to get the project running on your local machine.
+Follow these instructions to set up the project on a local environment.
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [npm](https://www.npmjs.com/) (installed with Node.js)
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) or a local MongoDB instance.
+- Node.js (v18.x or higher)
+- npm or yarn package manager
+- Access to a MongoDB database (Local or Atlas)
 
-### 1. Clone the Repository
+### 1. Project Initialization
 ```bash
 git clone https://github.com/nithindas-k/Stockify-.git
 cd Stockify-
 ```
 
-### 2. Backend Setup
+### 2. Digital Server Configuration (Backend)
 ```bash
 cd backend
 npm install
 ```
-Create a `.env` file in the `backend` directory and add your credentials:
+Create a `.env` file in the `backend` folder with the following keys:
 ```env
 PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_random_secret_key
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
+SMTP_PASS=your_gmail_app_password
 ```
-Run the backend:
+Execute the backend server:
 ```bash
 npm run dev
 ```
 
-### 3. Frontend Setup
-Open a new terminal and navigate to the root directory, then:
+### 3. Client Application Configuration (Frontend)
+Open a new terminal session from the project root:
 ```bash
 cd frontend
 npm install
 ```
-Create a `.env` file in the `frontend` directory:
+Create a `.env` file in the `frontend` folder:
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
-Run the frontend:
+Execute the client application:
 ```bash
 npm run dev
 ```
 
-The application should now be running at:
+The application will be accessible at:
 - Frontend: `http://localhost:5173`
 - Backend API: `http://localhost:5000/api`
 
 ---
 
-## 📦 Deployment
+## Deployment Strategy
 
 ### Backend (Render)
-- **Root Directory:** `backend`
-- **Build Command:** `npm install && npm run build`
-- **Start Command:** `npm start`
+- **Root Directory:** backend
+- **Build Command:** npm install && npm run build
+- **Start Command:** npm start
 
 ### Frontend (Vercel)
-- **Root Directory:** `frontend`
-- **Framework Preset:** `Vite`
-- **Build Command:** `npm run build`
-- **Environment Variable:** `VITE_API_URL` set to your backend URL + `/api`
+- **Root Directory:** frontend
+- **Framework Preset:** Vite
+- **Build Command:** npm run build
+- **Output Directory:** dist
+- **Environment Variable:** VITE_API_URL pointing to the production backend API.
 
 ---
 
-## 🔒 License
-This project is licensed under the MIT License.
+## License
+Distributed under the MIT License.
