@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth/authService';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,8 +47,8 @@ const SignupPage: React.FC = () => {
             <div className="w-full max-w-[420px] space-y-6 animate-in fade-in duration-700">
                 {/* Brand Identity */}
                 <div className="flex flex-col items-center space-y-2 mb-2">
-                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(157,0,255,0.3)]">
-                        <div className="w-4 h-4 border-2 border-white rounded-sm rotate-12" />
+                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-xl font-bold tracking-tight text-foreground">Stockify</span>
                 </div>

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, Package, Users, ShoppingCart,
-    BarChart3, LogOut, Bell,  PanelLeft,
+    BarChart3, LogOut, Bell, PanelLeft, TrendingUp
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import {
@@ -49,8 +49,8 @@ function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInne
         <>
             {/* Logo */}
             <div className="flex items-center gap-3 px-4 border-b border-border/40 h-14 shrink-0">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary shadow-[0_0_14px_rgba(157,0,255,0.4)]">
-                    <div className="size-3.5 rounded-sm border-2 border-white rotate-12" />
+                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary">
+                    <TrendingUp className="size-4 text-white" />
                 </div>
                 {showLabels && (
                     <span className="text-base font-bold tracking-tight text-white whitespace-nowrap">
