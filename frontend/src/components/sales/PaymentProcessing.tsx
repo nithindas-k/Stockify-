@@ -43,12 +43,12 @@ export const PaymentProcessing: React.FC<PaymentProcessingProps> = ({ isOpen, on
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-xl p-4">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-md p-8 bg-card border border-white/10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
+                className="relative w-full sm:max-w-md p-6 sm:p-10 bg-card border border-white/10 rounded-[2rem] sm:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
             >
                 {/* Background glow */}
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-primary/20 blur-[100px] rounded-full -z-10" />
