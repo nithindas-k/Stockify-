@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { ISaleService } from '../services/interfaces/ISaleService';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { ISaleController } from './interfaces/ISaleController';
 
-export class SaleController {
+export class SaleController implements ISaleController {
     constructor(private saleService: ISaleService) { }
 
     createSale = async (req: Request, res: Response): Promise<void> => {

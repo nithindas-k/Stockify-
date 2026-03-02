@@ -1,8 +1,9 @@
 import * as express from 'express';
 import { INotificationService } from '../services/interfaces/INotificationService';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { INotificationController } from './interfaces/INotificationController';
 
-export class NotificationController {
+export class NotificationController implements INotificationController {
     constructor(private notificationService: INotificationService) { }
 
     getAll = async (req: express.Request, res: express.Response): Promise<void> => {

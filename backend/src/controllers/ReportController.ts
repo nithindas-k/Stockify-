@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { IReportService } from '../services/interfaces/IReportService';
 import { MailService } from '../utils/MailService';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { IReportController } from './interfaces/IReportController';
 
-export class ReportController {
+export class ReportController implements IReportController {
     constructor(private reportService: IReportService) { }
 
     getSalesReport = async (req: Request, res: Response): Promise<void> => {

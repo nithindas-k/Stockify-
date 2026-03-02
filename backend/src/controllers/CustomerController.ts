@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { ICustomerService } from '../services/interfaces/ICustomerService';
 import { AuthRequest } from '../middleware/authMiddleware';
+import { ICustomerController } from './interfaces/ICustomerController';
 
-export class CustomerController {
+export class CustomerController implements ICustomerController {
     constructor(private customerService: ICustomerService) { }
 
     createCustomer = async (req: Request, res: Response): Promise<void> => {

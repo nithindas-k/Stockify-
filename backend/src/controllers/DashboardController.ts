@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { IDashboardService } from '../services/interfaces/IDashboardService';
+import { IDashboardController } from './interfaces/IDashboardController';
 
-export class DashboardController {
+export class DashboardController implements IDashboardController {
     constructor(private dashboardService: IDashboardService) { }
 
     getStats = async (req: Request, res: Response): Promise<void> => {
