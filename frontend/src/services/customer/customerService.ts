@@ -1,7 +1,7 @@
 import apiClient from '../../api/apiClient';
 import { CUSTOMER_ROUTES } from '../../utils/constants/apiRoutes';
 
-/* ── Payload / Query types ──────────────────────────────────── */
+
 export interface GetCustomersParams {
     page?: number;
     limit?: number;

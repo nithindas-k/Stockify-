@@ -7,7 +7,6 @@ export const AUTH_ROUTES = {
 } as const;
 
 
-/* ── Inventory ──────────────────────────────────────────────── */
 export const INVENTORY_ROUTES = {
     GET_ALL: '/inventory',
     GET_BY_ID: (id: string) => `/inventory/${id}`,
@@ -17,7 +16,6 @@ export const INVENTORY_ROUTES = {
     LOW_STOCK: '/inventory/low-stock',
 } as const;
 
-/* ── Customers ──────────────────────────────────────────────── */
 export const CUSTOMER_ROUTES = {
     GET_ALL: '/customers',
     GET_BY_ID: (id: string) => `/customers/${id}`,
@@ -26,7 +24,7 @@ export const CUSTOMER_ROUTES = {
     DELETE: (id: string) => `/customers/${id}`,
 } as const;
 
-/* ── Sales / Orders ─────────────────────────────────────────── */
+
 export const SALES_ROUTES = {
     GET_ALL: '/sales',
     GET_BY_ID: (id: string) => `/sales/${id}`,

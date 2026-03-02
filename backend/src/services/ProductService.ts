@@ -53,7 +53,7 @@ export class ProductService implements IProductService {
         const updated = await this.productRepository.update(userId, id, data);
         if (!updated) throw new Error('Product not found');
 
-        // Check for low stock notification
+    
         if (this.notificationService && updated.quantity < 5) {
             await this.notificationService.createLowStockNotification(
                 userId,

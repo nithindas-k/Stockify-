@@ -35,7 +35,7 @@ const InventoryPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-    // Modal State
+   
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Product>>({
         name: '', sku: '', category: '', quantity: 0, price: 0, lowStockThreshold: 10, description: ''
@@ -43,7 +43,6 @@ const InventoryPage: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    // Alert Dialog State
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 

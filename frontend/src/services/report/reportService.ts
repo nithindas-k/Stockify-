@@ -1,13 +1,11 @@
 import apiClient from '../../api/apiClient';
 import { REPORT_ROUTES } from '../../utils/constants/apiRoutes';
 
-/* ── Query types ────────────────────────────────────────────── */
 export interface ReportParams {
     startDate?: string;
     endDate?: string;
 }
 
-/* ── Report Service ─────────────────────────────────────────── */
 export const reportService = {
     getSummary: () =>
         apiClient.get(REPORT_ROUTES.SUMMARY),

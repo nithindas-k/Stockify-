@@ -1,7 +1,6 @@
 import apiClient from '../../api/apiClient';
 import { AUTH_ROUTES } from '../../utils/constants/apiRoutes';
 
-/* ── Payload types ──────────────────────────────────────────── */
 export interface LoginPayload {
     email: string;
     password: string;
@@ -13,7 +12,6 @@ export interface SignupPayload {
     password: string;
 }
 
-/* ── User Auth ──────────────────────────────────────────────── */
 export const authService = {
     login: (payload: LoginPayload) =>
         apiClient.post(AUTH_ROUTES.LOGIN, payload),

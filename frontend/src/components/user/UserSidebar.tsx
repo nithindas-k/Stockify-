@@ -172,33 +172,13 @@ function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInne
     );
 }
 
-/* ─── exported hook ─────────────────────────────────────────── */
-/**
- * useSidebarToggle — returns a stable `toggle` function.
- * Must be used in the same component that renders <UserSidebar />.
- * Pass the returned `toggle` to e.g. a header button.
- */
 export function useSidebarToggle() {
-    // We publish the toggle via a module-level ref so UserSidebar can receive it.
     return _publishedToggle;
 }
 
-// Module-level slot so UserSidebar can publish its toggle to the parent.
 let _publishedToggle: () => void = () => { };
 
-/* ─── exported component ────────────────────────────────────── */
-/**
- * UserSidebar
- *
- * Drop it as the FIRST child of your flex layout.
- * Desktop: pushes content (changes its own width).
- * Mobile:  fixed overlay drawer with dark backdrop.
- *
- * To wire a toggle button in the header, use `useSidebarToggle()`:
- *   const toggle = useSidebarToggle();
- *   ...
- *   <button onClick={toggle}><PanelLeft /></button>
- */
+
 export function UserSidebar() {
     const [isMobile, setIsMobile] = useState(window.innerWidth < MOBILE_BP);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -213,7 +193,7 @@ export function UserSidebar() {
         else setDesktopOpen((v) => !v);
     }, []);
 
-    // Publish toggle so useSidebarToggle() can return it
+
     _publishedToggle = toggle;
 
     useEffect(() => {

@@ -1,7 +1,6 @@
 import apiClient from '../../api/apiClient';
 import { SALES_ROUTES } from '../../utils/constants/apiRoutes';
 
-/* ── Payload / Query types ──────────────────────────────────── */
 export interface GetSalesParams {
     page?: number;
     limit?: number;
@@ -22,7 +21,6 @@ export interface SalePayload {
     notes?: string;
 }
 
-/* ── Sales Service ──────────────────────────────────────────── */
 export const salesService = {
     getAll: (params?: GetSalesParams) =>
         apiClient.get(SALES_ROUTES.GET_ALL, { params }),

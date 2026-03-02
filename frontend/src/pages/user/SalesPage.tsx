@@ -52,11 +52,10 @@ const SalesPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-    // Form Data
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
 
-    // Selectors Data
+
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
 
@@ -69,7 +68,7 @@ const SalesPage: React.FC = () => {
     const [isSaleConfirmOpen, setIsSaleConfirmOpen] = useState(false);
     const [showPaymentAnimation, setShowPaymentAnimation] = useState(false);
 
-    // Fetch Base
+   
     const fetchSales = async () => {
         setLoading(true);
         try {
@@ -96,7 +95,7 @@ const SalesPage: React.FC = () => {
         fetchDependencies();
     }, [search]);
 
-    // Handle form opens
+    
     const handleOpenModal = () => {
         setFormCustomerName('Walk-in Customer');
         setFormCustomerId('cash');
@@ -166,9 +165,7 @@ const SalesPage: React.FC = () => {
 
             await saleService.create(payload);
             setIsSaleConfirmOpen(false);
-            setShowPaymentAnimation(true); // Trigger professional animation
-
-            // Clean up behind the scenes
+            setShowPaymentAnimation(true); 
             fetchSales();
             fetchDependencies();
         } catch (error: any) {
@@ -187,7 +184,6 @@ const SalesPage: React.FC = () => {
 
     const safeSales = Array.isArray(sales) ? sales : [];
 
-    // Calculate modal running total
     const modalTotal = formItems.reduce((acc, curr) => acc + (curr.pricePerUnit * curr.quantity), 0);
 
     return (

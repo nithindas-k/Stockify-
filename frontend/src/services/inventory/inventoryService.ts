@@ -19,7 +19,7 @@ export interface InventoryPayload {
     description?: string;
 }
 
-/* ── Inventory Service ──────────────────────────────────────── */
+
 export const inventoryService = {
     getAll: (params?: GetInventoryParams) =>
         apiClient.get(INVENTORY_ROUTES.GET_ALL, { params }),

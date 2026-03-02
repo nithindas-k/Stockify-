@@ -30,7 +30,7 @@ const CustomersPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-    // Modal State
+    
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Customer>>({
         name: '', mobile: '', address: ''
@@ -38,7 +38,6 @@ const CustomersPage: React.FC = () => {
     const [saving, setSaving] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    // Alert Dialog State
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
 
@@ -112,7 +111,7 @@ const CustomersPage: React.FC = () => {
         }
     };
 
-    // Ensure we unwrap the datablock properly.
+    
     const safeCustomers = Array.isArray(customers) ? customers : [];
 
     return (

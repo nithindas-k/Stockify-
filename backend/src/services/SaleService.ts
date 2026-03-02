@@ -43,7 +43,6 @@ export class SaleService implements ISaleService {
                     quantity: newQuantity
                 });
 
-                // Check for low stock notification (< 5 as requested or based on threshold)
                 if (newQuantity < 5) {
                     await this.notificationService.createLowStockNotification(
                         saleData.userId as string,
