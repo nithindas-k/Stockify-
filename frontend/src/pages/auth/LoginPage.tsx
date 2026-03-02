@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
                 </Card>
 
                 <p className="text-center text-[10px] text-muted-foreground/40 font-medium uppercase tracking-[0.1em]">
-                    Stockify Financial Services &copy; 2024
+                    Stockify Financial Services &copy; 2026
                 </p>
             </div>
         </div>
