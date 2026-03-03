@@ -9,6 +9,8 @@ import { NotificationBell } from '../../components/notifications/NotificationBel
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationControls } from '../../components/common/PaginationControls';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table';
@@ -112,6 +114,30 @@ const ReportsPage: React.FC = () => {
             fetchLedger(selectedCustomerId);
         }
     }, [selectedCustomerId]);
+
+    // Pagination for Sales Tab
+    const {
+        currentPage: salesPage,
+        totalPages: salesTotalPages,
+        currentData: pagedSales,
+        goToPage: goSalesPage
+    } = usePagination(salesReport?.sales || [], 6);
+
+    // Pagination for Items Tab
+    const {
+        currentPage: itemsPage,
+        totalPages: itemsTotalPages,
+        currentData: pagedItems,
+        goToPage: goItemsPage
+    } = usePagination(itemsReport?.items || [], 6);
+
+    // Pagination for Ledger Tab
+    const {
+        currentPage: ledgerPage,
+        totalPages: ledgerTotalPages,
+        currentData: pagedLedger,
+        goToPage: goLedgerPage
+    } = usePagination(ledgerReport?.transactions || [], 6);
 
 
     const getTableId = () => `${activeTab}-table`;
@@ -262,10 +288,10 @@ const ReportsPage: React.FC = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {salesReport.sales?.length === 0 ? (
+                                                {pagedSales.length === 0 ? (
                                                     <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No sales found.</TableCell></TableRow>
                                                 ) : (
-                                                    salesReport.sales?.map((s: any) => (
+                                                    pagedSales.map((s: any) => (
                                                         <TableRow key={s._id} className="border-white/5">
                                                             <TableCell>
                                                                 <div className="font-semibold text-xs tracking-wider">TXN-{s._id.slice(-6).toUpperCase()}</div>
@@ -280,6 +306,11 @@ const ReportsPage: React.FC = () => {
                                             </TableBody>
                                         </Table>
                                     </div>
+                                    <PaginationControls
+                                        currentPage={salesPage}
+                                        totalPages={salesTotalPages}
+                                        onPageChange={goSalesPage}
+                                    />
                                 </>
                             ) : null}
                         </TabsContent>
@@ -306,10 +337,10 @@ const ReportsPage: React.FC = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {itemsReport.items?.length === 0 ? (
+                                                {pagedItems.length === 0 ? (
                                                     <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No items found.</TableCell></TableRow>
                                                 ) : (
-                                                    itemsReport.items?.map((item: any) => (
+                                                    pagedItems.map((item: any) => (
                                                         <TableRow key={item._id} className="border-white/5">
                                                             <TableCell>
                                                                 <div className="font-medium">{item.name}</div>
@@ -328,6 +359,11 @@ const ReportsPage: React.FC = () => {
                                             </TableBody>
                                         </Table>
                                     </div>
+                                    <PaginationControls
+                                        currentPage={itemsPage}
+                                        totalPages={itemsTotalPages}
+                                        onPageChange={goItemsPage}
+                                    />
                                 </>
                             ) : null}
                         </TabsContent>
@@ -368,10 +404,10 @@ const ReportsPage: React.FC = () => {
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                {ledgerReport.transactions?.length === 0 ? (
+                                                {pagedLedger.length === 0 ? (
                                                     <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No transactions found for this customer.</TableCell></TableRow>
                                                 ) : (
-                                                    ledgerReport.transactions?.map((t: any) => (
+                                                    pagedLedger.map((t: any) => (
                                                         <TableRow key={t._id} className="border-white/5">
                                                             <TableCell className="text-sm">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
                                                             <TableCell className="font-semibold text-xs tracking-wider">TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
@@ -383,6 +419,11 @@ const ReportsPage: React.FC = () => {
                                             </TableBody>
                                         </Table>
                                     </div>
+                                    <PaginationControls
+                                        currentPage={ledgerPage}
+                                        totalPages={ledgerTotalPages}
+                                        onPageChange={goLedgerPage}
+                                    />
                                 </>
                             ) : selectedCustomerId ? (
                                 <div className="text-center text-muted-foreground mt-12 flex flex-col items-center">

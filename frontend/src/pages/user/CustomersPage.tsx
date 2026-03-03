@@ -5,6 +5,8 @@ import { Plus, Users, UserX, LayoutGrid, Search, MoreHorizontal, Edit, Trash2, P
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
 import { NotificationBell } from '../../components/notifications/NotificationBell';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationControls } from '../../components/common/PaginationControls';
 
 
 import { Button } from '../../components/ui/button';
@@ -30,7 +32,7 @@ const CustomersPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-    
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Customer>>({
         name: '', mobile: '', address: ''
@@ -111,8 +113,15 @@ const CustomersPage: React.FC = () => {
         }
     };
 
-    
+
     const safeCustomers = Array.isArray(customers) ? customers : [];
+
+    const {
+        currentPage,
+        totalPages,
+        currentData: pagedCustomers,
+        goToPage
+    } = usePagination(safeCustomers, 6);
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
@@ -214,13 +223,13 @@ const CustomersPage: React.FC = () => {
                             <div className="col-span-full py-12 flex justify-center">
                                 <Spinner className="mx-auto" />
                             </div>
-                        ) : safeCustomers.length === 0 ? (
+                        ) : pagedCustomers.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-muted-foreground bg-card rounded-xl border border-white/10">
                                 <UserX className="w-10 h-10 mx-auto mb-3 opacity-20" />
                                 No customers found
                             </div>
                         ) : (
-                            safeCustomers.map((customer) => (
+                            pagedCustomers.map((customer) => (
                                 <div key={customer._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
                                     <div className="absolute top-3 right-3">
                                         <DropdownMenu>
@@ -285,7 +294,7 @@ const CustomersPage: React.FC = () => {
                                             <Spinner className="mx-auto" />
                                         </TableCell>
                                     </TableRow>
-                                ) : safeCustomers.length === 0 ? (
+                                ) : pagedCustomers.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={4} className="h-40 text-center text-muted-foreground">
                                             <UserX className="w-10 h-10 mx-auto mb-3 opacity-20" />
@@ -293,7 +302,7 @@ const CustomersPage: React.FC = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    safeCustomers.map((customer) => (
+                                    pagedCustomers.map((customer) => (
                                         <TableRow key={customer._id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
@@ -346,6 +355,12 @@ const CustomersPage: React.FC = () => {
                             </TableBody>
                         </Table>
                     </div>
+
+                    <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                    />
 
                 </main>
             </div>

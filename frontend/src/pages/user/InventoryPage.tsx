@@ -5,6 +5,8 @@ import { Plus, Package, PackageOpen, LayoutGrid, Search, MoreHorizontal, Edit, T
 import { inventoryService } from '../../services/inventory/inventoryService';
 import { toast } from 'sonner';
 import { NotificationBell } from '../../components/notifications/NotificationBell';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationControls } from '../../components/common/PaginationControls';
 
 
 import { Button } from '../../components/ui/button';
@@ -35,7 +37,7 @@ const InventoryPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
 
-   
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [formData, setFormData] = useState<Partial<Product>>({
         name: '', sku: '', category: '', quantity: 0, price: 0, lowStockThreshold: 10, description: ''
@@ -115,6 +117,13 @@ const InventoryPage: React.FC = () => {
             setItemToDelete(null);
         }
     };
+
+    const {
+        currentPage,
+        totalPages,
+        currentData: pagedProducts,
+        goToPage
+    } = usePagination(products, 6);
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
@@ -241,13 +250,13 @@ const InventoryPage: React.FC = () => {
                             <div className="col-span-full py-12 flex justify-center">
                                 <Spinner className="mx-auto" />
                             </div>
-                        ) : products.length === 0 ? (
+                        ) : pagedProducts.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-muted-foreground bg-card rounded-xl border border-white/10">
                                 <PackageOpen className="w-10 h-10 mx-auto mb-3 opacity-20" />
                                 No items found
                             </div>
                         ) : (
-                            products.map((product) => (
+                            pagedProducts.map((product) => (
                                 <div key={product._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
                                     <div className="absolute top-3 right-3">
                                         <DropdownMenu>
@@ -332,7 +341,7 @@ const InventoryPage: React.FC = () => {
                                             <Spinner className="mx-auto" />
                                         </TableCell>
                                     </TableRow>
-                                ) : products.length === 0 ? (
+                                ) : pagedProducts.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="h-40 text-center text-muted-foreground">
                                             <PackageOpen className="w-10 h-10 mx-auto mb-3 opacity-20" />
@@ -340,7 +349,7 @@ const InventoryPage: React.FC = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    products.map((product) => (
+                                    pagedProducts.map((product) => (
                                         <TableRow key={product._id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
@@ -398,6 +407,12 @@ const InventoryPage: React.FC = () => {
                             </TableBody>
                         </Table>
                     </div>
+
+                    <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                    />
 
                 </main>
             </div>

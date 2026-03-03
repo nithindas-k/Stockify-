@@ -8,6 +8,8 @@ import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
 import { NotificationBell } from '../../components/notifications/NotificationBell';
 import { PaymentProcessing } from '../../components/sales/PaymentProcessing';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationControls } from '../../components/common/PaginationControls';
 
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -191,6 +193,13 @@ const SalesPage: React.FC = () => {
 
 
     const safeSales = Array.isArray(sales) ? sales : [];
+
+    const {
+        currentPage,
+        totalPages,
+        currentData: pagedSales,
+        goToPage
+    } = usePagination(safeSales, 6);
 
     const modalTotal = formItems.reduce((acc, curr) => acc + (curr.pricePerUnit * curr.quantity), 0);
 
@@ -446,7 +455,7 @@ const SalesPage: React.FC = () => {
                                             <Spinner className="mx-auto" />
                                         </TableCell>
                                     </TableRow>
-                                ) : safeSales.length === 0 ? (
+                                ) : pagedSales.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={4} className="h-40 text-center text-muted-foreground">
                                             <ShoppingBag className="w-10 h-10 mx-auto mb-3 opacity-20" />
@@ -454,7 +463,7 @@ const SalesPage: React.FC = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    safeSales.map((sale) => (
+                                    pagedSales.map((sale) => (
                                         <TableRow key={sale._id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
@@ -491,13 +500,13 @@ const SalesPage: React.FC = () => {
                             <div className="col-span-full py-12 flex justify-center">
                                 <Spinner className="mx-auto" />
                             </div>
-                        ) : safeSales.length === 0 ? (
+                        ) : pagedSales.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-muted-foreground bg-card rounded-xl border border-white/10">
                                 <ShoppingBag className="w-10 h-10 mx-auto mb-3 opacity-20" />
                                 No sales recorded
                             </div>
                         ) : (
-                            safeSales.map((sale) => (
+                            pagedSales.map((sale) => (
                                 <div key={sale._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-green-500/30 transition-colors">
                                     <div className="flex items-center gap-3 pr-8">
                                         <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
@@ -527,6 +536,12 @@ const SalesPage: React.FC = () => {
                             ))
                         )}
                     </div>
+
+                    <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                    />
 
                 </main>
             </div>

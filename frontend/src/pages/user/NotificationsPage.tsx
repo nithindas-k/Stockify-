@@ -7,6 +7,8 @@ import type { Notification } from '../../services/notifications/notificationServ
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/button';
 import { Spinner } from '../../components/ui/spinner';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationControls } from '../../components/common/PaginationControls';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -50,6 +52,13 @@ const NotificationsPage: React.FC = () => {
             toast.error('Failed to clear notifications');
         }
     };
+
+    const {
+        currentPage,
+        totalPages,
+        currentData: pagedNotifications,
+        goToPage
+    } = usePagination(notifications, 6);
 
     return (
         <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
@@ -100,7 +109,7 @@ const NotificationsPage: React.FC = () => {
                                 <p className="text-sm text-muted-foreground/60">No new notifications at this time.</p>
                             </div>
                         ) : (
-                            notifications.map((notif) => (
+                            pagedNotifications.map((notif) => (
                                 <div
                                     key={notif._id}
                                     className="p-5 bg-card/40 border border-border/50 rounded-xl hover:border-primary/30 transition-all flex gap-4 items-start"
@@ -126,6 +135,12 @@ const NotificationsPage: React.FC = () => {
                             ))
                         )}
                     </div>
+
+                    <PaginationControls
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                    />
                 </main>
             </div>
 
