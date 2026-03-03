@@ -140,7 +140,7 @@ const ReportsPage: React.FC = () => {
     } = usePagination(ledgerReport?.transactions || [], 6);
 
 
-    const getTableId = () => `${activeTab}-table`;
+    const getTableId = () => `${activeTab}-table-full`;
     const getReportTitle = () => activeTab === 'sales' ? 'Sales Report' : activeTab === 'items' ? 'Inventory Items Report' : 'Customer Ledger';
 
     const handlePrint = () => {
@@ -457,6 +457,84 @@ const ReportsPage: React.FC = () => {
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
+
+                    {/* Hidden Tables for Exporting All Data (No Pagination) */}
+                    <div className="hidden" aria-hidden="true">
+                        {salesReport?.sales && (
+                            <Table id="sales-table-full">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Transaction ID</TableHead>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Customer</TableHead>
+                                        <TableHead>Items Count</TableHead>
+                                        <TableHead>Total Amount</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {salesReport.sales.map((s: any) => (
+                                        <TableRow key={s._id}>
+                                            <TableCell>TXN-{s._id.slice(-6).toUpperCase()}</TableCell>
+                                            <TableCell>{new Date(s.saleDate).toLocaleString()}</TableCell>
+                                            <TableCell>{s.customerName}</TableCell>
+                                            <TableCell>{s.items?.length}</TableCell>
+                                            <TableCell>₹{s.totalAmount?.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+
+                        {itemsReport?.items && (
+                            <Table id="items-table-full">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Product</TableHead>
+                                        <TableHead>SKU</TableHead>
+                                        <TableHead>Category</TableHead>
+                                        <TableHead>Stock Level</TableHead>
+                                        <TableHead>Price</TableHead>
+                                        <TableHead>Total Value</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {itemsReport.items.map((item: any) => (
+                                        <TableRow key={item._id}>
+                                            <TableCell>{item.name}</TableCell>
+                                            <TableCell>{item.sku}</TableCell>
+                                            <TableCell>{item.category}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>₹{item.price?.toFixed(2)}</TableCell>
+                                            <TableCell>₹{(item.price * item.quantity).toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+
+                        {ledgerReport?.transactions && (
+                            <Table id="ledger-table-full">
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Date</TableHead>
+                                        <TableHead>Transaction ID</TableHead>
+                                        <TableHead>Payment Method</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {ledgerReport.transactions.map((t: any) => (
+                                        <TableRow key={t._id}>
+                                            <TableCell>{new Date(t.saleDate).toLocaleDateString()}</TableCell>
+                                            <TableCell>TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
+                                            <TableCell>{t.paymentMethod}</TableCell>
+                                            <TableCell>₹{t.totalAmount.toFixed(2)}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </div>
 
                 </main>
             </div>
