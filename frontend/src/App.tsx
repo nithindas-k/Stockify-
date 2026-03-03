@@ -8,11 +8,35 @@ import CustomersPage from './pages/user/CustomersPage';
 import SalesPage from './pages/user/SalesPage';
 import ReportsPage from './pages/user/ReportsPage';
 import NotificationsPage from './pages/user/NotificationsPage';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
+
+
+function RouteProgress() {
+  const location = useLocation();
+
+  useEffect(() => {
+    NProgress.start();
+    const timer = setTimeout(() => {
+      NProgress.done();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      NProgress.done();
+    };
+  }, [location]);
+
+  return null;
+}
 
 function App() {
   return (
     <Router>
+      <RouteProgress />
       <Routes>
         {/* ── Auth ── */}
         <Route path="/login" element={<LoginPage />} />
