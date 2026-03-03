@@ -123,21 +123,27 @@ function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInne
             </nav>
 
             {/* User footer */}
-            <div className="border-t border-border/40 px-2 py-3 space-y-1 shrink-0">
+            <div className="border-t border-border/40 p-3 space-y-3 shrink-0">
                 {showLabels ? (
-                    <div className="flex items-center gap-3 px-2 py-2">
-                        <div className="size-8 shrink-0 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
-                            <span className="text-xs font-bold text-primary">{user?.name?.[0]?.toUpperCase()}</span>
+                    <div className="flex items-center gap-3 px-1">
+                        <div className="relative group">
+                            <div className="size-9 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 border border-primary/30 flex items-center justify-center shadow-[0_0_15px_rgba(157,0,255,0.2)]">
+                                <span className="text-xs font-bold text-white uppercase">{user?.name?.[0] || 'U'}</span>
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 size-2.5 bg-emerald-500 border-2 border-[hsl(240_10%_4%)] rounded-full" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                            <p className="text-xs text-white/40 truncate">{user?.email}</p>
+                            <p className="text-sm font-semibold text-white truncate leading-none mb-1">{user?.name || 'User'}</p>
+                            <p className="text-[11px] text-white/40 truncate font-medium">{user?.email || 'user@example.com'}</p>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex justify-center py-1">
-                        <div className="size-8 shrink-0 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center">
-                            <span className="text-xs font-bold text-primary">{user?.name?.[0]?.toUpperCase()}</span>
+                    <div className="flex justify-center">
+                        <div className="relative group">
+                            <div className="size-9 shrink-0 rounded-full bg-gradient-to-br from-primary to-primary/60 border border-primary/30 flex items-center justify-center shadow-[0_0_10px_rgba(157,0,255,0.2)]">
+                                <span className="text-xs font-bold text-white uppercase">{user?.name?.[0] || 'U'}</span>
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 size-2.5 bg-emerald-500 border-2 border-[hsl(240_10%_4%)] rounded-full" />
                         </div>
                     </div>
                 )}
@@ -145,11 +151,12 @@ function SidebarInner({ showLabels, pathname, onNav, user, logout }: SidebarInne
                     <button
                         onClick={() => setIsLogoutConfirmOpen(true)}
                         title={!showLabels ? 'Logout' : undefined}
-                        className={`w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm font-medium
-                            text-red-400 hover:bg-red-500/10 transition-colors
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                            transition-all active:scale-[0.98]
+                            text-red-400 hover:bg-red-500/10 hover:text-red-300
                             ${showLabels ? '' : 'justify-center'}`}
                     >
-                        <LogOut className="size-4 shrink-0" />
+                        <LogOut className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
                         {showLabels && <span>Logout</span>}
                     </button>
                     <AlertDialogContent className="bg-card border-border rounded-xl">
