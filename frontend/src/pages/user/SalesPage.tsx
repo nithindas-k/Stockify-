@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { Plus, ShoppingCart, ShoppingBag, Search, SearchX } from 'lucide-react';
+import { Plus, ShoppingCart, ShoppingBag, Search, SearchX, User, Phone, CreditCard, Wallet, Banknote, Smartphone } from 'lucide-react';
 import { saleService } from '../../services/sale/saleService';
 import { inventoryService } from '../../services/inventory/inventoryService';
 import { customerService } from '../../services/customer/customerService';
@@ -60,7 +60,8 @@ const SalesPage: React.FC = () => {
     const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
 
     const [formCustomerName, setFormCustomerName] = useState('');
-    const [formCustomerId, setFormCustomerId] = useState<string>('cash');
+    const [formCustomerMobile, setFormCustomerMobile] = useState('');
+    const [formCustomerId, setFormCustomerId] = useState<string>('guest');
     const [formPaymentMethod, setFormPaymentMethod] = useState<'Cash' | 'Card' | 'UPI' | 'Other'>('Cash');
 
     const [formItems, setFormItems] = useState<{ productId: string, quantity: number, pricePerUnit: number }[]>([]);
@@ -68,7 +69,7 @@ const SalesPage: React.FC = () => {
     const [isSaleConfirmOpen, setIsSaleConfirmOpen] = useState(false);
     const [showPaymentAnimation, setShowPaymentAnimation] = useState(false);
 
-   
+
     const fetchSales = async () => {
         setLoading(true);
         try {
@@ -95,10 +96,11 @@ const SalesPage: React.FC = () => {
         fetchDependencies();
     }, [search]);
 
-    
+
     const handleOpenModal = () => {
-        setFormCustomerName('Walk-in Customer');
-        setFormCustomerId('cash');
+        setFormCustomerName('');
+        setFormCustomerMobile('');
+        setFormCustomerId('guest');
         setFormPaymentMethod('Cash');
         setFormItems([]);
         setIsAddModalOpen(true);
@@ -106,11 +108,15 @@ const SalesPage: React.FC = () => {
 
     const handleCustomerChange = (val: string) => {
         setFormCustomerId(val);
-        if (val === 'cash') {
-            setFormCustomerName('Walk-in Customer');
+        if (val === 'guest') {
+            setFormCustomerName('');
+            setFormCustomerMobile('');
         } else {
             const c = allCustomers.find(x => x._id === val);
-            if (c) setFormCustomerName(c.name);
+            if (c) {
+                setFormCustomerName(c.name);
+                setFormCustomerMobile(c.mobile);
+            }
         }
     }
 
@@ -156,8 +162,10 @@ const SalesPage: React.FC = () => {
         setSaving(true);
         try {
             const payload = {
-                customerName: formCustomerName,
-                customerId: formCustomerId === 'cash' ? undefined : formCustomerId,
+                customerName: formCustomerId === 'guest'
+                    ? (formCustomerName.trim() || 'Walk-in Customer') + (formCustomerMobile ? ` (${formCustomerMobile})` : '')
+                    : formCustomerName,
+                customerId: formCustomerId === 'guest' ? undefined : formCustomerId,
                 userId: user?.id,
                 paymentMethod: formPaymentMethod,
                 items: formItems.map(i => ({ productId: i.productId, quantity: i.quantity }))
@@ -165,7 +173,7 @@ const SalesPage: React.FC = () => {
 
             await saleService.create(payload);
             setIsSaleConfirmOpen(false);
-            setShowPaymentAnimation(true); 
+            setShowPaymentAnimation(true);
             fetchSales();
             fetchDependencies();
         } catch (error: any) {
@@ -253,45 +261,98 @@ const SalesPage: React.FC = () => {
                                     </DialogHeader>
                                     <div className="grid gap-4 py-4 max-h-[65vh] overflow-y-auto px-1 snap-y">
 
-                                        <div className="grid grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Customer</Label>
+                                                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                                    <User className="w-3 h-3" /> Customer Type
+                                                </Label>
                                                 <Select value={formCustomerId} onValueChange={handleCustomerChange}>
-                                                    <SelectTrigger className="border-border bg-background">
+                                                    <SelectTrigger className="border-border bg-background/50 backdrop-blur-sm h-11 focus:ring-primary/20">
                                                         <SelectValue placeholder="Select Customer" />
                                                     </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="cash" className="font-bold text-primary">Cash / Walk-in</SelectItem>
+                                                    <SelectContent className="bg-card border-border">
+                                                        <SelectItem value="guest" className="font-bold text-primary flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <User className="w-4 h-4" /> Guest
+                                                            </div>
+                                                        </SelectItem>
                                                         {allCustomers.map(c => (
-                                                            <SelectItem key={c._id} value={c._id}>{c.name} ({c.mobile})</SelectItem>
+                                                            <SelectItem key={c._id} value={c._id}>
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-medium">{c.name}</span>
+                                                                    <span className="text-[10px] text-muted-foreground">{c.mobile}</span>
+                                                                </div>
+                                                            </SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
                                             </div>
+
                                             <div className="space-y-2">
-                                                <Label>Payment Method</Label>
+                                                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                                                    <Wallet className="w-3 h-3" /> Payment Method
+                                                </Label>
                                                 <Select value={formPaymentMethod} onValueChange={(v: any) => setFormPaymentMethod(v)}>
-                                                    <SelectTrigger className="border-border bg-background">
+                                                    <SelectTrigger className="border-border bg-background/50 backdrop-blur-sm h-11 focus:ring-primary/20">
                                                         <SelectValue placeholder="Payment Method" />
                                                     </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="Cash">Cash</SelectItem>
-                                                        <SelectItem value="Card">Card</SelectItem>
-                                                        <SelectItem value="UPI">UPI</SelectItem>
-                                                        <SelectItem value="Other">Other</SelectItem>
+                                                    <SelectContent className="bg-card border-border">
+                                                        <SelectItem value="Cash" className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <Banknote className="w-4 h-4 text-green-500" /> Cash
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="Card" className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <CreditCard className="w-4 h-4 text-blue-500" /> Card
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="UPI" className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <Smartphone className="w-4 h-4 text-purple-500" /> UPI
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="Other" className="flex items-center gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <Plus className="w-4 h-4 text-orange-500" /> Other
+                                                            </div>
+                                                        </SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
 
-                                            {formCustomerId === 'cash' && (
-                                                <div className="col-span-2 space-y-2">
-                                                    <Label>Walk-in Customer Name</Label>
-                                                    <Input
-                                                        value={formCustomerName}
-                                                        onChange={(e) => setFormCustomerName(e.target.value)}
-                                                        placeholder="Name (Optional)"
-                                                        className="border-border bg-background"
-                                                    />
+                                            {formCustomerId === 'guest' && (
+                                                <div className="col-span-1 sm:col-span-2 p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                    <div className="flex items-center gap-2 text-primary font-semibold text-sm">
+                                                        <User className="w-4 h-4" />
+                                                        Guest Customer Details
+                                                    </div>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs text-muted-foreground">Guest Name</Label>
+                                                            <div className="relative">
+                                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                                                <Input
+                                                                    value={formCustomerName}
+                                                                    onChange={(e) => setFormCustomerName(e.target.value)}
+                                                                    placeholder="e.g. John Doe"
+                                                                    className="h-10 border-border bg-background/50 pl-10 focus:ring-primary/20"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <Label className="text-xs text-muted-foreground">Contact Number</Label>
+                                                            <div className="relative">
+                                                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                                                <Input
+                                                                    value={formCustomerMobile}
+                                                                    onChange={(e) => setFormCustomerMobile(e.target.value)}
+                                                                    placeholder="e.g. +91 9876..."
+                                                                    className="h-10 border-border bg-background/50 pl-10 focus:ring-primary/20"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
