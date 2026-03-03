@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import {
@@ -13,6 +14,7 @@ import { Spinner } from '../../components/ui/spinner';
 
 export default function Dashboard() {
     const user = useAuthStore((s) => s.user);
+    const navigate = useNavigate();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -87,7 +89,10 @@ export default function Dashboard() {
                             <div className="rounded-xl border border-border/50 bg-card/40 p-5 md:p-6">
                                 <div className="flex items-center justify-between mb-5">
                                     <h2 className="text-base font-semibold">Recent Sales</h2>
-                                    <button className="text-xs text-primary hover:underline font-medium flex items-center gap-1">
+                                    <button
+                                        onClick={() => navigate('/sales')}
+                                        className="text-xs text-primary hover:underline font-medium flex items-center gap-1"
+                                    >
                                         View all <ChevronRight className="size-3" />
                                     </button>
                                 </div>
