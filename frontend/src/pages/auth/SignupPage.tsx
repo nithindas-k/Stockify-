@@ -10,23 +10,54 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { toast } from 'sonner';
 
+
 const SignupPage: React.FC = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     const navigate = useNavigate();
     const setAuth = useAuthStore((s) => s.setAuth);
 
+    const validate = () => {
+        const newErrors: { [key: string]: string } = {};
+
+        if (!name.trim()) {
+            newErrors.name = 'Full name is required';
+        } else if (name.trim().length < 3) {
+            newErrors.name = 'Name must be at least 3 characters';
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.trim()) {
+            newErrors.email = 'Email address is required';
+        } else if (!emailRegex.test(email)) {
+            newErrors.email = 'Please enter a valid email address';
+        }
+
+        if (!password) {
+            newErrors.password = 'Password is required';
+        } else if (password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters';
+        }
+
+        if (!confirmPassword) {
+            newErrors.confirmPassword = 'Please confirm your password';
+        } else if (password !== confirmPassword) {
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (password !== confirmPassword) {
-            toast.error('Passwords do not match');
-            return;
-        }
+        if (!validate()) return;
 
         setLoading(true);
 
@@ -41,6 +72,11 @@ const SignupPage: React.FC = () => {
             setLoading(false);
         }
     };
+
+    const inputClasses = (id: string) => `
+        h-11 border-border/50 focus:border-primary/50 transition-all rounded-lg pl-3 font-medium
+        ${errors[id] ? 'border-destructive/60 bg-destructive/5' : ''}
+    `;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-background p-4 font-sans selection:bg-primary/20">
@@ -65,52 +101,80 @@ const SignupPage: React.FC = () => {
 
                     <CardContent className="space-y-4">
                         <form onSubmit={handleSignup} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Full Name</Label>
+                            <div className="space-y-2 relative">
+                                <Label htmlFor="name" className={errors.name ? 'text-destructive' : ''}>Full Name</Label>
                                 <Input
                                     id="name"
                                     placeholder="Enter your name"
                                     value={name}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                                    className="h-11 border-border/50 focus:border-primary/50 transition-all rounded-lg pl-3 font-medium"
-                                    required
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setName(e.target.value);
+                                        if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
+                                    }}
+                                    className={inputClasses('name')}
                                 />
+                                {errors.name && (
+                                    <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
+                                        {errors.name}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email" className={errors.email ? 'text-destructive' : ''}>Email address</Label>
                                 <Input
                                     id="email"
                                     type="email"
                                     placeholder="name@example.com"
                                     value={email}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                    className="h-11 border-border/50 focus:border-primary/50 transition-all rounded-lg pl-3 font-medium"
-                                    required
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setEmail(e.target.value);
+                                        if (errors.email) setErrors(prev => ({ ...prev, email: '' }));
+                                    }}
+                                    className={inputClasses('email')}
                                 />
+                                {errors.email && (
+                                    <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
+                                        {errors.email}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password" className={errors.password ? 'text-destructive' : ''}>Password</Label>
                                 <Input
                                     id="password"
                                     type="password"
                                     placeholder="Create a strong password"
                                     value={password}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                    className="h-11 border-border/50 focus:border-primary/50 transition-all rounded-lg pl-3 font-medium"
-                                    required
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setPassword(e.target.value);
+                                        if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
+                                    }}
+                                    className={inputClasses('password')}
                                 />
+                                {errors.password && (
+                                    <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
+                                        {errors.password}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword" className={errors.confirmPassword ? 'text-destructive' : ''}>Confirm Password</Label>
                                 <Input
                                     id="confirmPassword"
                                     type="password"
                                     placeholder="Repeat your password"
                                     value={confirmPassword}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-                                    className="h-11 border-border/50 focus:border-primary/50 transition-all rounded-lg pl-3 font-medium"
-                                    required
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        setConfirmPassword(e.target.value);
+                                        if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
+                                    }}
+                                    className={inputClasses('confirmPassword')}
                                 />
+                                {errors.confirmPassword && (
+                                    <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
+                                        {errors.confirmPassword}
+                                    </p>
+                                )}
                             </div>
                             <Button
                                 type="submit"
