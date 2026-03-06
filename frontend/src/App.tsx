@@ -15,6 +15,7 @@ const ReportsPage = lazy(() => import('./pages/user/ReportsPage'));
 const NotificationsPage = lazy(() => import('./pages/user/NotificationsPage'));
 
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 
 
@@ -39,31 +40,33 @@ function RouteProgress() {
 function App() {
   return (
     <Router>
-      <RouteProgress />
-      <Suspense fallback={
-        <div className="h-screen w-screen flex items-center justify-center bg-background">
-          <Spinner className="w-8 h-8 text-primary" />
-        </div>
-      }>
-        <Routes>
-          {/* ── Auth ── */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+      <ErrorBoundary>
+        <RouteProgress />
+        <Suspense fallback={
+          <div className="h-screen w-screen flex items-center justify-center bg-background">
+            <Spinner className="w-8 h-8 text-primary" />
+          </div>
+        }>
+          <Routes>
+            {/* ── Auth ── */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
 
-          {/* ── User Protected Routes ── */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/inventory" element={<InventoryPage />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/sales" element={<SalesPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/notifications" element={<NotificationsPage />} />
-          </Route>
+            {/* ── User Protected Routes ── */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/inventory" element={<InventoryPage />} />
+              <Route path="/customers" element={<CustomersPage />} />
+              <Route path="/sales" element={<SalesPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+            </Route>
 
-          {/* ── Fallback ── */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
+            {/* ── Fallback ── */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </Router>
   );
 }
