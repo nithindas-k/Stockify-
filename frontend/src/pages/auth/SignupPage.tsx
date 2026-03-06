@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { authService } from '../../services/auth/authService';
-import { ChevronRight, TrendingUp } from 'lucide-react';
+import { ChevronRight, TrendingUp, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,8 @@ const SignupPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -140,17 +142,26 @@ const SignupPage: React.FC = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password" className={errors.password ? 'text-destructive' : ''}>Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="Create a strong password"
-                                    value={password}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        setPassword(e.target.value);
-                                        if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
-                                    }}
-                                    className={inputClasses('password')}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Create a strong password"
+                                        value={password}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setPassword(e.target.value);
+                                            if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
+                                        }}
+                                        className={`${inputClasses('password')} pr-10`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                                 {errors.password && (
                                     <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
                                         {errors.password}
@@ -159,17 +170,26 @@ const SignupPage: React.FC = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="confirmPassword" className={errors.confirmPassword ? 'text-destructive' : ''}>Confirm Password</Label>
-                                <Input
-                                    id="confirmPassword"
-                                    type="password"
-                                    placeholder="Repeat your password"
-                                    value={confirmPassword}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        setConfirmPassword(e.target.value);
-                                        if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                                    }}
-                                    className={inputClasses('confirmPassword')}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        placeholder="Repeat your password"
+                                        value={confirmPassword}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                            setConfirmPassword(e.target.value);
+                                            if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
+                                        }}
+                                        className={`${inputClasses('confirmPassword')} pr-10`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </button>
+                                </div>
                                 {errors.confirmPassword && (
                                     <p className="text-[11px] font-semibold text-destructive mt-1 animate-in slide-in-from-top-1 duration-200">
                                         {errors.confirmPassword}
