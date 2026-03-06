@@ -21,6 +21,8 @@ import { Spinner } from '../../components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import { Badge } from '../../components/ui/badge';
 
+import { useDebounce } from '../../hooks/useDebounce';
+
 interface Product {
     _id: string;
     name: string;
@@ -53,6 +55,7 @@ const SalesPage: React.FC = () => {
     const [sales, setSales] = useState<Sale[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -75,7 +78,7 @@ const SalesPage: React.FC = () => {
     const fetchSales = async () => {
         setLoading(true);
         try {
-            const res = await saleService.getAll({ search });
+            const res = await saleService.getAll({ search: debouncedSearch });
             setSales(res.data.data || res.data);
         } catch (error: any) {
             toast.error('Failed to load sales');
@@ -96,7 +99,7 @@ const SalesPage: React.FC = () => {
     useEffect(() => {
         fetchSales();
         fetchDependencies();
-    }, [search]);
+    }, [debouncedSearch]);
 
 
     const handleOpenModal = () => {

@@ -20,6 +20,8 @@ import { Label } from '../../components/ui/label';
 import { Spinner } from '../../components/ui/spinner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 
+import { useDebounce } from '../../hooks/useDebounce';
+
 interface Product {
     _id: string;
     name: string;
@@ -36,6 +38,7 @@ const InventoryPage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
 
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -51,7 +54,7 @@ const InventoryPage: React.FC = () => {
     const fetchProducts = async () => {
         setLoading(true);
         try {
-            const res = await inventoryService.getAll({ search });
+            const res = await inventoryService.getAll({ search: debouncedSearch });
             setProducts(res.data);
         } catch (error: any) {
             toast.error(error.message || 'Failed to load inventory');
@@ -62,7 +65,7 @@ const InventoryPage: React.FC = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [search]);
+    }, [debouncedSearch]);
 
     const handleOpenModal = (product?: Product) => {
         if (product) {

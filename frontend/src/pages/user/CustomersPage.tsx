@@ -18,6 +18,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Label } from '../../components/ui/label';
 import { Spinner } from '../../components/ui/spinner';
 
+import { useDebounce } from '../../hooks/useDebounce';
+
 interface Customer {
     _id: string;
     name: string;
@@ -31,6 +33,7 @@ const CustomersPage: React.FC = () => {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const debouncedSearch = useDebounce(search, 500);
 
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -46,7 +49,7 @@ const CustomersPage: React.FC = () => {
     const fetchCustomers = async () => {
         setLoading(true);
         try {
-            const res = await customerService.getAll({ search });
+            const res = await customerService.getAll({ search: debouncedSearch });
             setCustomers(res.data.data || res.data);
         } catch (error: any) {
             toast.error(error.message || 'Failed to load customers');
@@ -57,7 +60,7 @@ const CustomersPage: React.FC = () => {
 
     useEffect(() => {
         fetchCustomers();
-    }, [search]);
+    }, [debouncedSearch]);
 
     const handleOpenModal = (customer?: Customer) => {
         if (customer) {

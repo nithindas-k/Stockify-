@@ -1,17 +1,20 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './pages/auth/LoginPage';
-import SignupPage from './pages/auth/SignupPage';
-import Dashboard from './pages/user/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
-import InventoryPage from './pages/user/InventoryPage';
-import CustomersPage from './pages/user/CustomersPage';
-import SalesPage from './pages/user/SalesPage';
-import ReportsPage from './pages/user/ReportsPage';
-import NotificationsPage from './pages/user/NotificationsPage';
-import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect, Suspense, lazy } from 'react';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+import { Spinner } from './components/ui/spinner';
+
+// Lazy load pages
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const SignupPage = lazy(() => import('./pages/auth/SignupPage'));
+const Dashboard = lazy(() => import('./pages/user/Dashboard'));
+const InventoryPage = lazy(() => import('./pages/user/InventoryPage'));
+const CustomersPage = lazy(() => import('./pages/user/CustomersPage'));
+const SalesPage = lazy(() => import('./pages/user/SalesPage'));
+const ReportsPage = lazy(() => import('./pages/user/ReportsPage'));
+const NotificationsPage = lazy(() => import('./pages/user/NotificationsPage'));
+
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 
@@ -37,26 +40,30 @@ function App() {
   return (
     <Router>
       <RouteProgress />
-      <Routes>
-        {/* ── Auth ── */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+      <Suspense fallback={
+        <div className="h-screen w-screen flex items-center justify-center bg-background">
+          <Spinner className="w-8 h-8 text-primary" />
+        </div>
+      }>
+        <Routes>
+          {/* ── Auth ── */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-        {/* ── User Protected Routes ── */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/inventory" element={<InventoryPage />} />
-          <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/sales" element={<SalesPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-        </Route>
+          {/* ── User Protected Routes ── */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/inventory" element={<InventoryPage />} />
+            <Route path="/customers" element={<CustomersPage />} />
+            <Route path="/sales" element={<SalesPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+          </Route>
 
-
-
-        {/* ── Fallback ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* ── Fallback ── */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

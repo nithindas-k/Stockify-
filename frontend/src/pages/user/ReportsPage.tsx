@@ -28,13 +28,13 @@ interface SummaryCardProps {
     subtitle?: string;
 }
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ title, value, subtitle }) => (
+const SummaryCard: React.FC<SummaryCardProps> = React.memo(({ title, value, subtitle }) => (
     <div className="bg-card border border-white/10 rounded-xl p-5 shadow-lg flex flex-col justify-center">
         <h3 className="text-sm font-medium text-muted-foreground mb-1">{title}</h3>
         <p className="text-2xl font-bold text-foreground">{value}</p>
         {subtitle && <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>}
     </div>
-);
+));
 
 const ReportsPage: React.FC = () => {
     const user = useAuthStore((s) => s.user);
