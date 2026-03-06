@@ -182,31 +182,147 @@ const ReportsPage: React.FC = () => {
         if (!emailAddress) return toast.error("Enter a valid email address");
         setEmailing(true);
         try {
-            const table = document.getElementById(getTableId());
-            if (!table) return toast.error("No data available to email.");
+            const dateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+            let tableRows = '';
+            let tableHeaders = '';
+            let summaryStats = '';
+
+            // Generate content based on active tab
+            if (activeTab === 'sales' && salesReport) {
+                tableHeaders = `
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">ID</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Customer</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
+                `;
+                tableRows = salesReport.sales.map((s: any) => `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">TXN-${s._id.slice(-6).toUpperCase()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${s.customerName}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">${new Date(s.saleDate).toLocaleDateString()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #6366f1;">₹${s.totalAmount?.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+                summaryStats = `
+                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
+                        <div style="font-size: 12px; color: #6b7280;">Total Revenue</div>
+                        <div style="font-size: 20px; font-weight: bold; color: #111827;">₹${salesReport.summary?.totalRevenue?.toFixed(2)}</div>
+                    </div>
+                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 12px; color: #6b7280;">Transactions</div>
+                        <div style="font-size: 20px; font-weight: bold; color: #111827;">${salesReport.summary?.totalSales}</div>
+                    </div>
+                `;
+            } else if (activeTab === 'items' && itemsReport) {
+                tableHeaders = `
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Product</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">SKU</th>
+                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid #6366f1; color: #1f2937;">Stock</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Valuation</th>
+                `;
+                tableRows = itemsReport.items.map((item: any) => `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                            <div style="font-weight: bold;">${item.name}</div>
+                            <div style="font-size: 11px; color: #9ca3af;">${item.category}</div>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">${item.sku}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                            <span style="color: ${item.quantity <= item.lowStockThreshold ? '#ef4444' : '#111827'}; font-weight: ${item.quantity <= item.lowStockThreshold ? 'bold' : 'normal'}">
+                                ${item.quantity}
+                            </span>
+                        </td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #10b981;">₹${(item.price * item.quantity).toFixed(2)}</td>
+                    </tr>
+                `).join('');
+                summaryStats = `
+                    <div style="display: inline-block; width: 30%; background: #f3f4f6; padding: 10px; border-radius: 10px; margin-right: 5px;">
+                        <div style="font-size: 10px; color: #6b7280;">Catalog</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #111827;">${itemsReport.summary?.totalItems}</div>
+                    </div>
+                    <div style="display: inline-block; width: 30%; background: #f3f4f6; padding: 10px; border-radius: 10px; margin-right: 5px;">
+                        <div style="font-size: 10px; color: #6b7280;">Net Value</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #111827;">₹${itemsReport.summary?.totalValue?.toFixed(0)}</div>
+                    </div>
+                    <div style="display: inline-block; width: 30%; background: #f3f4f6; padding: 10px; border-radius: 10px;">
+                        <div style="font-size: 10px; color: #6b7280;">Low Stock</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #ef4444;">${itemsReport.summary?.lowStockItems}</div>
+                    </div>
+                `;
+            } else if (activeTab === 'ledger' && ledgerReport) {
+                tableHeaders = `
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">TXN ID</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Method</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
+                `;
+                tableRows = ledgerReport.transactions.map((t: any) => `
+                    <tr>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${new Date(t.saleDate).toLocaleDateString()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">TXN-${t._id.slice(-6).toUpperCase()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;"><span style="font-size: 11px; background: #eef2ff; color: #6366f1; padding: 2px 6px; border-radius: 4px;">${t.paymentMethod}</span></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">₹${t.totalAmount.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+                summaryStats = `
+                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
+                        <div style="font-size: 12px; color: #6b7280;">Total Purchases</div>
+                        <div style="font-size: 20px; font-weight: bold; color: #111827;">${ledgerReport.summary?.totalPurchases}</div>
+                    </div>
+                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px;">
+                        <div style="font-size: 12px; color: #6b7280;">Lifetime Value</div>
+                        <div style="font-size: 20px; font-weight: bold; color: #6366f1;">₹${ledgerReport.summary?.totalSpent?.toFixed(2)}</div>
+                    </div>
+                `;
+            }
 
             const htmlContent = `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-                    <h2 style="color: #6366f1;">Stockify - ${getReportTitle()}</h2>
-                    <p style="color: #6b7280; font-size: 14px;">This is an automated report generated from your Stockify dashboard.</p>
-                    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
-                    <style>
-                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                        th { background-color: #f9fafb; color: #374151; font-weight: 600; border: 1px solid #e5e7eb; padding: 12px 8px; text-align: left; }
-                        td { border: 1px solid #e5e7eb; padding: 10px 8px; color: #4b5563; }
-                        .text-right { text-align: right; }
-                        .text-center { text-align: center; }
-                        .font-bold { font-weight: bold; }
-                    </style>
-                    <table>
-                        ${table.innerHTML}
-                    </table>
-                    <p style="margin-top: 30px; font-size: 10px; color: #9ca3af; text-align: center;">Stockify Financial Services &copy; 2026</p>
+                <div style="background-color: #f9fafb; padding: 40px 10px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                    <div style="max-width: 650px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                        <!-- Header -->
+                        <div style="background-color: #6366f1; padding: 30px; text-align: center; color: #ffffff;">
+                            <div style="font-size: 24px; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 4px;">STOCKIFY</div>
+                            <div style="font-size: 14px; opacity: 0.9;">Business Intelligence Platform</div>
+                        </div>
+
+                        <!-- Content Body -->
+                        <div style="padding: 30px;">
+                            <div style="margin-bottom: 25px;">
+                                <h1 style="font-size: 20px; margin: 0; color: #111827;">${getReportTitle()}</h1>
+                                <p style="font-size: 14px; color: #6b7280; margin-top: 5px;">Report generated on ${dateStr}</p>
+                            </div>
+
+                            <!-- Summary Area -->
+                            <div style="margin-bottom: 30px; text-align: center;">
+                                ${summaryStats}
+                            </div>
+
+                            <!-- Data Table -->
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;">
+                                    <thead>
+                                        <tr>
+                                            ${tableHeaders}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${tableRows || '<tr><td colspan="100" style="text-align: center; padding: 20px; color: #9ca3af;">No data available for this period</td></tr>'}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin-top: 40px; border-top: 1px solid #e5e7eb; padding-top: 20px; color: #6b7280; font-size: 12px; text-align: center;">
+                                <p>This report contains confidential business data meant only for the authorized recipient.</p>
+                                <p style="margin-top: 10px; font-weight: bold;">&copy; 2026 Stockify ERP Solutions. All rights reserved.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
+
             await reportService.emailReport({
                 email: emailAddress,
-                subject: `Stockify - ${getReportTitle()}`,
+                subject: `📊 Stockify | ${getReportTitle()} - ${dateStr}`,
                 htmlContent
             });
             toast.success("Report emailed securely!");
