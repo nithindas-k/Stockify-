@@ -180,17 +180,29 @@ const ReportsPage: React.FC = () => {
 
     const handleSendEmail = async () => {
         if (!emailAddress) return toast.error("Enter a valid email address");
-        const table = document.getElementById(getTableId());
-        if (!table) return toast.error("No data available to email.");
-
         setEmailing(true);
         try {
+            const table = document.getElementById(getTableId());
+            if (!table) return toast.error("No data available to email.");
+
             const htmlContent = `
-                <h2>${getReportTitle()}</h2>
-                <table style="width: 100%; border-collapse: collapse; font-family: sans-serif;">
-                    ${table.innerHTML}
-                </table>
-               <style>th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }</style>
+                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #6366f1;">Stockify - ${getReportTitle()}</h2>
+                    <p style="color: #6b7280; font-size: 14px;">This is an automated report generated from your Stockify dashboard.</p>
+                    <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+                    <style>
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background-color: #f9fafb; color: #374151; font-weight: 600; border: 1px solid #e5e7eb; padding: 12px 8px; text-align: left; }
+                        td { border: 1px solid #e5e7eb; padding: 10px 8px; color: #4b5563; }
+                        .text-right { text-align: right; }
+                        .text-center { text-align: center; }
+                        .font-bold { font-weight: bold; }
+                    </style>
+                    <table>
+                        ${table.innerHTML}
+                    </table>
+                    <p style="margin-top: 30px; font-size: 10px; color: #9ca3af; text-align: center;">Stockify Financial Services &copy; 2026</p>
+                </div>
             `;
             await reportService.emailReport({
                 email: emailAddress,
@@ -201,7 +213,9 @@ const ReportsPage: React.FC = () => {
             setIsEmailModalOpen(false);
             setEmailAddress('');
         } catch (error: any) {
-            toast.error("Failed to email report");
+            console.error('Email report error:', error);
+            const errMsg = error.response?.data?.error || error.response?.data?.message || "Failed to email report";
+            toast.error(errMsg);
         } finally {
             setEmailing(false);
         }
