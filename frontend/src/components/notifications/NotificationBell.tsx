@@ -27,6 +27,13 @@ export const NotificationBell: React.FC = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    const handleBellClick = () => {
+        setIsAnimating(true);
+        fetchNotifications();
+        setTimeout(() => setIsAnimating(false), 500);
+    };
 
     const fetchNotifications = async () => {
         try {
@@ -59,10 +66,13 @@ export const NotificationBell: React.FC = () => {
         <>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
-                    <button className="relative p-2 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" onClick={fetchNotifications}>
-                        <Bell className="size-4" />
+                    <button
+                        className={`relative p-2 rounded-lg hover:bg-white/5 text-muted-foreground hover:text-foreground transition-all duration-300 cursor-pointer active:scale-90 ${isAnimating ? 'ring-2 ring-primary/20' : ''}`}
+                        onClick={handleBellClick}
+                    >
+                        <Bell className={`size-4 ${isAnimating ? 'animate-bell-ring text-primary' : ''}`} />
                         {notifications.length > 0 && (
-                            <span className="absolute top-1 right-1 flex size-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm ring-2 ring-background">
+                            <span className="absolute top-1 right-1 flex size-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white shadow-sm ring-2 ring-background animate-pulse-subtle">
                                 {notifications.length > 9 ? '9+' : notifications.length}
                             </span>
                         )}
