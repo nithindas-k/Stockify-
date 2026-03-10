@@ -4,7 +4,6 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { Spinner } from './components/ui/spinner';
 
-// Lazy load pages
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const SignupPage = lazy(() => import('./pages/auth/SignupPage'));
 const Dashboard = lazy(() => import('./pages/user/Dashboard'));

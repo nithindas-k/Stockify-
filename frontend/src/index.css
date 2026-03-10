@@ -135,6 +135,7 @@ select:-webkit-autofill:focus {
 #nprogress .bar {
   background: hsl(var(--primary)) !important;
   height: 3px !important;
+
   z-index: 9999 !important;
 }
 
