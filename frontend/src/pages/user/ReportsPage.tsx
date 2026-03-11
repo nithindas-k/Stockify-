@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronRight } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
@@ -57,6 +57,13 @@ const ReportsPage: React.FC = () => {
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [emailAddress, setEmailAddress] = useState('');
     const [emailing, setEmailing] = useState(false);
+
+    // Toggle state for expandable lists
+    const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+
+    const toggleRow = (id: string) => {
+        setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
+    };
 
     const fetchSales = async () => {
         setSalesLoading(true);
@@ -445,9 +452,9 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="text-[10px] text-muted-foreground">{new Date(s.saleDate).toLocaleString()}</div>
                                                             </TableCell>
                                                             <TableCell>{s.customerName}</TableCell>
-                                                            <TableCell className="min-w-[250px]">
+                                                            <TableCell className="min-w-[250px] align-top">
                                                                 <div className="flex flex-col gap-1.5 py-1">
-                                                                    {s.items?.map((item: any, idx: number) => (
+                                                                    {(expandedRows[s._id] ? s.items : s.items?.slice(0, 1))?.map((item: any, idx: number) => (
                                                                         <div key={idx} className="group relative flex items-center gap-2 rounded-lg bg-primary/5 p-1.5 border border-primary/10 transition-all hover:bg-primary/10 hover:border-primary/20">
                                                                             <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-white/10 text-primary shadow-sm">
                                                                                 <Package className="size-3.5" />
@@ -467,6 +474,19 @@ const ReportsPage: React.FC = () => {
                                                                             </div>
                                                                         </div>
                                                                     ))}
+
+                                                                    {s.items?.length > 1 && (
+                                                                        <button
+                                                                            onClick={() => toggleRow(s._id)}
+                                                                            className="flex items-center gap-1 text-[10px] font-semibold text-primary/70 hover:text-primary mt-1 px-1 transition-colors group/btn"
+                                                                        >
+                                                                            {expandedRows[s._id] ? (
+                                                                                <><ChevronUp className="size-3" /> Show Less</>
+                                                                            ) : (
+                                                                                <><ChevronDown className="size-3 group-hover/btn:translate-y-0.5 transition-transform" /> {s.items.length - 1} more items</>
+                                                                            )}
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell className="text-right font-medium text-primary">₹{s.totalAmount?.toFixed(2)}</TableCell>
@@ -584,9 +604,9 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="text-[10px] text-muted-foreground">{t.paymentMethod}</div>
                                                             </TableCell>
                                                             <TableCell className="font-semibold text-xs tracking-wider">TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
-                                                            <TableCell className="min-w-[200px]">
+                                                            <TableCell className="min-w-[200px] align-top">
                                                                 <div className="flex flex-col gap-1.5">
-                                                                    {t.items?.map((item: any, idx: number) => (
+                                                                    {(expandedRows[t._id] ? t.items : t.items?.slice(0, 1))?.map((item: any, idx: number) => (
                                                                         <div key={idx} className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 border border-white/5 hover:border-white/10 transition-colors">
                                                                             <div className="flex items-center gap-2 min-w-0">
                                                                                 <ChevronRight className="size-3 text-primary/50 shrink-0" />
@@ -598,6 +618,19 @@ const ReportsPage: React.FC = () => {
                                                                             <span className="text-[10px] font-bold text-primary/90 ml-2">₹{(item.quantity * item.priceAtSale).toFixed(0)}</span>
                                                                         </div>
                                                                     ))}
+
+                                                                    {t.items?.length > 1 && (
+                                                                        <button
+                                                                            onClick={() => toggleRow(t._id)}
+                                                                            className="flex items-center gap-1 text-[9px] font-bold text-primary/60 hover:text-primary transition-colors px-1"
+                                                                        >
+                                                                            {expandedRows[t._id] ? (
+                                                                                <><ChevronUp className="size-3" /> Hide</>
+                                                                            ) : (
+                                                                                <><ChevronDown className="size-3" /> +{t.items.length - 1} more</>
+                                                                            )}
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </TableCell>
                                                             <TableCell className="text-right font-medium text-primary">₹{t.totalAmount.toFixed(2)}</TableCell>
