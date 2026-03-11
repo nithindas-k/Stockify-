@@ -192,17 +192,29 @@ const ReportsPage: React.FC = () => {
                 tableHeaders = `
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">ID</th>
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Customer</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
-                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Purchased Items</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Total</th>
                 `;
-                tableRows = salesReport.sales.map((s: any) => `
+                tableRows = salesReport.sales.map((s: any) => {
+                    const itemsList = s.items.map((i: any) =>
+                        `<div style="font-size: 11px; margin-bottom: 2px;">
+                            • ${i.productId?.name || 'Unknown Product'} 
+                            <span style="color: #6b7280;">(x${i.quantity} @ ₹${i.priceAtSale})</span> 
+                            = <b>₹${(i.quantity * i.priceAtSale).toFixed(2)}</b>
+                        </div>`
+                    ).join('');
+
+                    return `
                     <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">TXN-${s._id.slice(-6).toUpperCase()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">
+                            TXN-${s._id.slice(-6).toUpperCase()}
+                            <div style="font-size: 10px; color: #9ca3af;">${new Date(s.saleDate).toLocaleDateString()}</div>
+                        </td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${s.customerName}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">${new Date(s.saleDate).toLocaleDateString()}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${itemsList}</td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #6366f1;">₹${s.totalAmount?.toFixed(2)}</td>
                     </tr>
-                `).join('');
+                `}).join('');
                 summaryStats = `
                     <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
                         <div style="font-size: 12px; color: #6b7280;">Total Revenue</div>
@@ -253,17 +265,22 @@ const ReportsPage: React.FC = () => {
                 tableHeaders = `
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">TXN ID</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Method</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Purchased Items</th>
                     <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
                 `;
-                tableRows = ledgerReport.transactions.map((t: any) => `
+                tableRows = ledgerReport.transactions.map((t: any) => {
+                    const itemsText = t.items.map((i: any) =>
+                        `<div style="font-size: 11px; color: #4b5563;">• ${i.productId?.name || 'Item'} (x${i.quantity})</div>`
+                    ).join('');
+
+                    return `
                     <tr>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${new Date(t.saleDate).toLocaleDateString()}</td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">TXN-${t._id.slice(-6).toUpperCase()}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;"><span style="font-size: 11px; background: #eef2ff; color: #6366f1; padding: 2px 6px; border-radius: 4px;">${t.paymentMethod}</span></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${itemsText}</td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">₹${t.totalAmount.toFixed(2)}</td>
                     </tr>
-                `).join('');
+                `}).join('');
                 summaryStats = `
                     <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
                         <div style="font-size: 12px; color: #6b7280;">Total Purchases</div>
@@ -413,7 +430,7 @@ const ReportsPage: React.FC = () => {
                                                 <TableRow className="border-white/10">
                                                     <TableHead>Transaction</TableHead>
                                                     <TableHead>Customer</TableHead>
-                                                    <TableHead>Items Count</TableHead>
+                                                    <TableHead>Product Details (Qty x Price)</TableHead>
                                                     <TableHead className="text-right">Total Amount</TableHead>
                                                 </TableRow>
                                             </TableHeader>
@@ -428,7 +445,17 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="text-[10px] text-muted-foreground">{new Date(s.saleDate).toLocaleString()}</div>
                                                             </TableCell>
                                                             <TableCell>{s.customerName}</TableCell>
-                                                            <TableCell>{s.items?.length}</TableCell>
+                                                            <TableCell>
+                                                                <div className="space-y-1 py-1">
+                                                                    {s.items?.map((item: any, idx: number) => (
+                                                                        <div key={idx} className="text-[11px] leading-tight flex items-center gap-1.5">
+                                                                            <span className="font-medium text-foreground">{item.productId?.name || 'Unknown Product'}</span>
+                                                                            <span className="text-muted-foreground">({item.quantity} × ₹{item.priceAtSale})</span>
+                                                                            <span className="ml-auto font-bold text-primary">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </TableCell>
                                                             <TableCell className="text-right font-medium text-primary">₹{s.totalAmount?.toFixed(2)}</TableCell>
                                                         </TableRow>
                                                     ))
@@ -529,7 +556,7 @@ const ReportsPage: React.FC = () => {
                                                 <TableRow className="border-white/10">
                                                     <TableHead>Date</TableHead>
                                                     <TableHead>Transaction ID</TableHead>
-                                                    <TableHead>Payment Method</TableHead>
+                                                    <TableHead>Purchased Items</TableHead>
                                                     <TableHead className="text-right">Amount</TableHead>
                                                 </TableRow>
                                             </TableHeader>
@@ -539,9 +566,21 @@ const ReportsPage: React.FC = () => {
                                                 ) : (
                                                     pagedLedger.map((t: any) => (
                                                         <TableRow key={t._id} className="border-white/5">
-                                                            <TableCell className="text-sm">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
+                                                            <TableCell className="text-sm">
+                                                                {new Date(t.saleDate).toLocaleDateString()}
+                                                                <div className="text-[10px] text-muted-foreground">{t.paymentMethod}</div>
+                                                            </TableCell>
                                                             <TableCell className="font-semibold text-xs tracking-wider">TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
-                                                            <TableCell><Badge variant="outline" className="text-[10px]">{t.paymentMethod}</Badge></TableCell>
+                                                            <TableCell>
+                                                                <div className="space-y-1">
+                                                                    {t.items?.map((item: any, idx: number) => (
+                                                                        <div key={idx} className="text-[10px] text-muted-foreground italic flex justify-between">
+                                                                            <span>• {item.productId?.name || 'Item'} (x{item.quantity})</span>
+                                                                            <span className="ml-2 font-medium">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </TableCell>
                                                             <TableCell className="text-right font-medium text-primary">₹{t.totalAmount.toFixed(2)}</TableCell>
                                                         </TableRow>
                                                     ))
@@ -597,7 +636,7 @@ const ReportsPage: React.FC = () => {
                                         <TableHead>Transaction ID</TableHead>
                                         <TableHead>Date</TableHead>
                                         <TableHead>Customer</TableHead>
-                                        <TableHead>Items Count</TableHead>
+                                        <TableHead>Items Detailed List</TableHead>
                                         <TableHead>Total Amount</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -607,7 +646,11 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>TXN-{s._id.slice(-6).toUpperCase()}</TableCell>
                                             <TableCell>{new Date(s.saleDate).toLocaleString()}</TableCell>
                                             <TableCell>{s.customerName}</TableCell>
-                                            <TableCell>{s.items?.length}</TableCell>
+                                            <TableCell>
+                                                {s.items?.map((i: any) =>
+                                                    `${i.productId?.name || 'Unknown'} (${i.quantity} x ₹${i.priceAtSale} = ₹${(i.quantity * i.priceAtSale).toFixed(2)})`
+                                                ).join('; ')}
+                                            </TableCell>
                                             <TableCell>₹{s.totalAmount?.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
@@ -648,7 +691,8 @@ const ReportsPage: React.FC = () => {
                                     <TableRow>
                                         <TableHead>Date</TableHead>
                                         <TableHead>Transaction ID</TableHead>
-                                        <TableHead>Payment Method</TableHead>
+                                        <TableHead>Items Detailed</TableHead>
+                                        <TableHead>Payment</TableHead>
                                         <TableHead>Amount</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -657,6 +701,11 @@ const ReportsPage: React.FC = () => {
                                         <TableRow key={t._id}>
                                             <TableCell>{new Date(t.saleDate).toLocaleDateString()}</TableCell>
                                             <TableCell>TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
+                                            <TableCell>
+                                                {t.items?.map((i: any) =>
+                                                    `${i.productId?.name || 'Item'} (${i.quantity} x ₹${i.priceAtSale})`
+                                                ).join('; ')}
+                                            </TableCell>
                                             <TableCell>{t.paymentMethod}</TableCell>
                                             <TableCell>₹{t.totalAmount.toFixed(2)}</TableCell>
                                         </TableRow>
