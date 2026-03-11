@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronDown, ChevronUp, Trophy, Zap, Ghost, AlertCircle } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
@@ -57,6 +57,39 @@ const ReportsPage: React.FC = () => {
     const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [emailAddress, setEmailAddress] = useState('');
     const [emailing, setEmailing] = useState(false);
+
+    // Smart Product Analytics calculation
+    const analytics = React.useMemo(() => {
+        if (!salesReport || !itemsReport) return null;
+
+        const sales = salesReport.sales || [];
+        const products = itemsReport.items || [];
+        const productStats: Record<string, { qty: number, revenue: number, name: string }> = {};
+
+        sales.forEach((sale: any) => {
+            sale.items?.forEach((item: any) => {
+                const id = item.productId?._id || item.productId;
+                if (!id) return;
+                if (!productStats[id]) {
+                    productStats[id] = { qty: 0, revenue: 0, name: item.productName || item.productId?.name || 'Unknown' };
+                }
+                productStats[id].qty += item.quantity;
+                productStats[id].revenue += (item.priceAtSale || item.quantityPrice / item.quantity || 0) * item.quantity;
+            });
+        });
+
+        const sortedByQty = Object.values(productStats).sort((a, b) => b.qty - a.qty);
+        const bestSeller = sortedByQty[0] || null;
+
+        const soldProductIds = new Set(Object.keys(productStats));
+        const deadStock = products.filter((p: any) => !soldProductIds.has(p._id));
+
+        return {
+            bestSeller,
+            deadStockCount: deadStock.length,
+            productSales: productStats
+        };
+    }, [salesReport, itemsReport]);
 
     // Toggle state for expandable lists
     const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
@@ -522,43 +555,106 @@ const ReportsPage: React.FC = () => {
                         {/* --- ITEMS REPORT TAB --- */}
                         <TabsContent value="items" className="space-y-6 animate-in fade-in-50 zoom-in-95 duration-300">
                             {itemsLoading ? (
-                                <Spinner className="mx-auto" />
+                                <Spinner className="mx-auto mt-12" />
                             ) : itemsReport ? (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <SummaryCard title="Total Catalog Items" value={itemsReport.summary?.totalItems || 0} />
-                                        <SummaryCard title="Inventory Value" value={`₹${itemsReport.summary?.totalValue?.toFixed(2) || '0.00'}`} subtitle="Capital locked in stock" />
-                                        <SummaryCard title="Low Stock Warnings" value={itemsReport.summary?.lowStockItems || 0} subtitle="Items below threshold" />
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20 rounded-xl p-5 shadow-lg relative overflow-hidden group">
+                                            <Trophy className="absolute -right-2 -bottom-2 size-16 text-amber-500/10 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-amber-500/70 mb-1 flex items-center gap-1.5">
+                                                <Trophy className="size-3" /> Best Seller
+                                            </h3>
+                                            <p className="text-lg font-black text-foreground truncate">{analytics?.bestSeller?.name || 'N/A'}</p>
+                                            <p className="text-[10px] text-muted-foreground mt-1 font-bold">{analytics?.bestSeller?.qty || 0} units sold recently</p>
+                                        </div>
+
+                                        <div className="bg-card border border-white/10 rounded-xl p-5 shadow-lg relative overflow-hidden group">
+                                            <Zap className="absolute -right-2 -bottom-2 size-16 text-primary/10 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-primary/70 mb-1 flex items-center gap-1.5">
+                                                <Zap className="size-3" /> Inventory Value
+                                            </h3>
+                                            <p className="text-xl font-black text-foreground">₹{itemsReport.summary?.totalValue?.toLocaleString() || '0'}</p>
+                                            <p className="text-[10px] text-muted-foreground mt-1 font-bold">Capital locked in stock</p>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-red-500/10 to-pink-500/5 border border-red-500/20 rounded-xl p-5 shadow-lg relative overflow-hidden group">
+                                            <AlertCircle className="absolute -right-2 -bottom-2 size-16 text-red-500/10 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-red-500/70 mb-1 flex items-center gap-1.5">
+                                                <AlertCircle className="size-3" /> Low Stock
+                                            </h3>
+                                            <p className="text-2xl font-black text-red-500">{itemsReport.summary?.lowStockItems || 0}</p>
+                                            <p className="text-[10px] text-muted-foreground mt-1 font-bold">Items needing restock</p>
+                                        </div>
+
+                                        <div className="bg-gradient-to-br from-indigo-500/10 to-blue-500/5 border border-indigo-500/20 rounded-xl p-5 shadow-lg relative overflow-hidden group">
+                                            <Ghost className="absolute -right-2 -bottom-2 size-16 text-indigo-500/10 group-hover:scale-110 transition-transform" />
+                                            <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-500/70 mb-1 flex items-center gap-1.5">
+                                                <Ghost className="size-3" /> Dead Stock
+                                            </h3>
+                                            <p className="text-2xl font-black text-foreground">{analytics?.deadStockCount || 0}</p>
+                                            <p className="text-[10px] text-muted-foreground mt-1 font-bold">No sales in 30 days</p>
+                                        </div>
                                     </div>
-                                    <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
+
+                                    <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-2xl">
                                         <Table id="items-table">
-                                            <TableHeader className="bg-white/5">
+                                            <TableHeader className="bg-white/5 uppercase">
                                                 <TableRow className="border-white/10">
-                                                    <TableHead>Product</TableHead>
-                                                    <TableHead>Category</TableHead>
-                                                    <TableHead className="text-right">Stock Level</TableHead>
-                                                    <TableHead className="text-right">Stock Value</TableHead>
+                                                    <TableHead className="text-[10px]">Product & Performance</TableHead>
+                                                    <TableHead className="text-[10px]">Status</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Units Sold</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Stock Level</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Valuation</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {pagedItems.length === 0 ? (
-                                                    <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No items found.</TableCell></TableRow>
+                                                    <TableRow><TableCell colSpan={5} className="text-center py-16 text-muted-foreground opacity-30 italic">No inventory data available.</TableCell></TableRow>
                                                 ) : (
-                                                    pagedItems.map((item: any) => (
-                                                        <TableRow key={item._id} className="border-white/5">
-                                                            <TableCell>
-                                                                <div className="font-medium">{item.name}</div>
-                                                                <div className="text-[10px] text-muted-foreground max-w-[200px] truncate">{item.description}</div>
-                                                            </TableCell>
-                                                            <TableCell><Badge variant="outline" className="text-[10px]">{item.category}</Badge></TableCell>
-                                                            <TableCell className="text-right">
-                                                                <span className={item.quantity <= item.lowStockThreshold ? 'text-destructive font-bold' : ''}>
-                                                                    {item.quantity}
-                                                                </span>
-                                                            </TableCell>
-                                                            <TableCell className="text-right font-medium text-emerald-500">₹{(item.price * item.quantity).toFixed(2)}</TableCell>
-                                                        </TableRow>
-                                                    ))
+                                                    pagedItems.map((item: any) => {
+                                                        const sold = analytics?.productSales[item._id]?.qty || 0;
+                                                        const isDead = sold === 0;
+                                                        const isLow = item.quantity <= item.lowStockThreshold;
+
+                                                        return (
+                                                            <TableRow key={item._id} className="border-white/5 transition-colors hover:bg-white/[0.02] group">
+                                                                <TableCell className="py-4">
+                                                                    <div className="space-y-1">
+                                                                        <div className="font-black text-foreground group-hover:text-primary transition-colors flex items-center gap-2">
+                                                                            {item.name}
+                                                                            {sold > 10 && <Badge variant="secondary" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-[8px] h-3.5 px-1 py-0 uppercase font-black">Hot</Badge>}
+                                                                        </div>
+                                                                        <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter flex items-center gap-2">
+                                                                            <Badge variant="outline" className="text-[9px] px-1 py-0 h-3.5 border-white/10">{item.category}</Badge>
+                                                                            {item.description && <span>• {item.description.slice(0, 30)}...</span>}
+                                                                        </div>
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {isLow ? (
+                                                                        <Badge variant="destructive" className="bg-red-500/10 text-red-500 border-red-500/20 text-[9px] uppercase font-black py-0">Critical</Badge>
+                                                                    ) : isDead ? (
+                                                                        <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 text-[9px] uppercase font-black py-0">Dead</Badge>
+                                                                    ) : (
+                                                                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[9px] uppercase font-black py-0">Healthy</Badge>
+                                                                    )}
+                                                                </TableCell>
+                                                                <TableCell className="text-right py-4">
+                                                                    <div className="font-mono text-xs font-black text-foreground">{sold}</div>
+                                                                </TableCell>
+                                                                <TableCell className="text-right py-4">
+                                                                    <div className={`font-mono text-xs font-black ${isLow ? 'text-red-500 animate-pulse' : 'text-foreground/70'}`}>
+                                                                        {item.quantity}
+                                                                    </div>
+                                                                </TableCell>
+                                                                <TableCell className="text-right py-4">
+                                                                    <div className="font-black text-xs text-emerald-500">
+                                                                        ₹{(item.price * item.quantity).toFixed(0)}
+                                                                    </div>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })
                                                 )}
                                             </TableBody>
                                         </Table>
