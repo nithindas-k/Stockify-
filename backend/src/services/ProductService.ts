@@ -14,9 +14,14 @@ export class ProductService implements IProductService {
     }
 
     async createProduct(userId: string, data: CreateProductDTO): Promise<IProduct> {
-        const existing = await this.productRepository.findBySku(userId, data.sku);
-        if (existing) {
+        const existingSku = await this.productRepository.findBySku(userId, data.sku);
+        if (existingSku) {
             throw new Error(`Product with SKU ${data.sku} already exists.`);
+        }
+
+        const existingName = await this.productRepository.findByName(userId, data.name);
+        if (existingName) {
+            throw new Error(`Product with name "${data.name}" already exists.`);
         }
         const product = await this.productRepository.create(userId, data);
 
@@ -50,10 +55,16 @@ export class ProductService implements IProductService {
                 throw new Error(`Product with SKU ${data.sku} already exists.`);
             }
         }
+        if (data.name) {
+            const existing = await this.productRepository.findByName(userId, data.name);
+            if (existing && existing._id.toString() !== id) {
+                throw new Error(`Product with name "${data.name}" already exists.`);
+            }
+        }
         const updated = await this.productRepository.update(userId, id, data);
         if (!updated) throw new Error('Product not found');
 
-    
+
         if (this.notificationService && updated.quantity < 5) {
             await this.notificationService.createLowStockNotification(
                 userId,

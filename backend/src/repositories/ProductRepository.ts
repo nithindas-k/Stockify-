@@ -16,6 +16,10 @@ export class ProductRepository implements IProductRepository {
         return await Product.findOne({ sku, userId });
     }
 
+    async findByName(userId: string, name: string): Promise<IProduct | null> {
+        return await Product.findOne({ name, userId });
+    }
+
     async findAll(userId: string, query?: string, category?: string): Promise<IProduct[]> {
         const filter: any = { userId };
         if (query) {

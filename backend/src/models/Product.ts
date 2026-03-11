@@ -27,5 +27,6 @@ const ProductSchema: Schema = new Schema({
 });
 
 ProductSchema.index({ userId: 1, sku: 1 }, { unique: true });
+ProductSchema.index({ userId: 1, name: 1 }, { unique: true });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

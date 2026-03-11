@@ -79,8 +79,18 @@ const InventoryPage: React.FC = () => {
     };
 
     const handleSaveProduct = async () => {
-        if (!formData.name || !formData.sku || !formData.category) {
-            toast.error('Please fill all required fields');
+        if (!formData.name?.trim() || !formData.sku?.trim() || !formData.category) {
+            toast.error('Please fill all required fields (Name, SKU, Category)');
+            return;
+        }
+
+        if (formData.price !== undefined && formData.price < 0) {
+            toast.error('Price cannot be negative');
+            return;
+        }
+
+        if (formData.quantity !== undefined && formData.quantity < 0) {
+            toast.error('Quantity cannot be negative');
             return;
         }
 
@@ -96,7 +106,7 @@ const InventoryPage: React.FC = () => {
             setIsAddModalOpen(false);
             fetchProducts();
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to save item');
+            toast.error(error.response?.data?.message || error.message || 'Failed to save item');
         } finally {
             setSaving(false);
         }
@@ -213,12 +223,35 @@ const InventoryPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="price" className="sm:text-right font-medium">Price</Label>
-                                            <Input id="price" type="number" min="0" step="0.01" value={formData.price === 0 ? '' : formData.price} onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} className="sm:col-span-3 border-border bg-background" />
+                                            <Label htmlFor="price" className="sm:text-right font-medium">Price (₹)</Label>
+                                            <Input
+                                                id="price"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                placeholder="0.00"
+                                                value={formData.price === 0 ? '' : formData.price}
+                                                onChange={(e) => {
+                                                    const val = parseFloat(e.target.value);
+                                                    setFormData({ ...formData, price: isNaN(val) ? 0 : val });
+                                                }}
+                                                className="sm:col-span-3 border-border bg-background"
+                                            />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
                                             <Label htmlFor="qty" className="sm:text-right font-medium">Quantity</Label>
-                                            <Input id="qty" type="number" min="0" value={formData.quantity === 0 ? '' : formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })} className="sm:col-span-3 border-border bg-background" />
+                                            <Input
+                                                id="qty"
+                                                type="number"
+                                                min="0"
+                                                placeholder="0"
+                                                value={formData.quantity === 0 ? '' : formData.quantity}
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value);
+                                                    setFormData({ ...formData, quantity: isNaN(val) ? 0 : val });
+                                                }}
+                                                className="sm:col-span-3 border-border bg-background"
+                                            />
                                         </div>
                                     </div>
                                     <DialogFooter>
