@@ -198,8 +198,8 @@ const ReportsPage: React.FC = () => {
                 tableRows = salesReport.sales.map((s: any) => {
                     const itemsList = s.items.map((i: any) =>
                         `<div style="font-size: 11px; margin-bottom: 2px;">
-                            • ${i.productId?.name || 'Unknown Product'} 
-                            <span style="color: #6b7280;">(x${i.quantity} @ ₹${i.priceAtSale})</span> 
+                            • ${i.productName || i.productId?.name || 'Unknown Product'}
+                            <span style="color: #6b7280;">(x${i.quantity} @ ₹${i.priceAtSale})</span>
                             = <b>₹${(i.quantity * i.priceAtSale).toFixed(2)}</b>
                         </div>`
                     ).join('');
@@ -270,7 +270,7 @@ const ReportsPage: React.FC = () => {
                 `;
                 tableRows = ledgerReport.transactions.map((t: any) => {
                     const itemsText = t.items.map((i: any) =>
-                        `<div style="font-size: 11px; color: #4b5563;">• ${i.productId?.name || 'Item'} (x${i.quantity})</div>`
+                        `<div style="font-size: 11px; color: #4b5563;">• ${i.productName || i.productId?.name || 'Item'} (x${i.quantity})</div>`
                     ).join('');
 
                     return `
@@ -449,7 +449,7 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="space-y-1 py-1">
                                                                     {s.items?.map((item: any, idx: number) => (
                                                                         <div key={idx} className="text-[11px] leading-tight flex items-center gap-1.5">
-                                                                            <span className="font-medium text-foreground">{item.productId?.name || 'Unknown Product'}</span>
+                                                                            <span className="font-medium text-foreground">{item.productName || item.productId?.name || 'Unknown Product'}</span>
                                                                             <span className="text-muted-foreground">({item.quantity} × ₹{item.priceAtSale})</span>
                                                                             <span className="ml-auto font-bold text-primary">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
                                                                         </div>
@@ -575,7 +575,7 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="space-y-1">
                                                                     {t.items?.map((item: any, idx: number) => (
                                                                         <div key={idx} className="text-[10px] text-muted-foreground italic flex justify-between">
-                                                                            <span>• {item.productId?.name || 'Item'} (x{item.quantity})</span>
+                                                                            <span>• {item.productName || item.productId?.name || 'Item'} (x{item.quantity})</span>
                                                                             <span className="ml-2 font-medium">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
                                                                         </div>
                                                                     ))}
@@ -648,7 +648,7 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>{s.customerName}</TableCell>
                                             <TableCell>
                                                 {s.items?.map((i: any) =>
-                                                    `${i.productId?.name || 'Unknown'} (${i.quantity} x ₹${i.priceAtSale} = ₹${(i.quantity * i.priceAtSale).toFixed(2)})`
+                                                    `${i.productName || i.productId?.name || 'Unknown'} (${i.quantity} x ₹${i.priceAtSale} = ₹${(i.quantity * i.priceAtSale).toFixed(2)})`
                                                 ).join('; ')}
                                             </TableCell>
                                             <TableCell>₹{s.totalAmount?.toFixed(2)}</TableCell>
@@ -703,7 +703,7 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
                                             <TableCell>
                                                 {t.items?.map((i: any) =>
-                                                    `${i.productId?.name || 'Item'} (${i.quantity} x ₹${i.priceAtSale})`
+                                                    `${i.productName || i.productId?.name || 'Item'} (${i.quantity} x ₹${i.priceAtSale})`
                                                 ).join('; ')}
                                             </TableCell>
                                             <TableCell>{t.paymentMethod}</TableCell>

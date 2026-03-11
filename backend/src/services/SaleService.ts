@@ -30,6 +30,7 @@ export class SaleService implements ISaleService {
 
             processedItems.push({
                 productId: product._id,
+                productName: product.name,
                 quantity: item.quantity,
                 priceAtSale: product.price
             });

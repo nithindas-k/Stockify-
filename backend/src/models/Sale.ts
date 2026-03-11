@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ISale extends Document {
-    customerName: string; 
-    customerId?: mongoose.Types.ObjectId; 
-    userId?: mongoose.Types.ObjectId; 
+    customerName: string;
+    customerId?: mongoose.Types.ObjectId;
+    userId?: mongoose.Types.ObjectId;
     items: {
         productId: mongoose.Types.ObjectId;
+        productName: string;
         quantity: number;
         priceAtSale: number;
     }[];
@@ -24,6 +25,7 @@ const SaleSchema: Schema = new Schema(
         items: [
             {
                 productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+                productName: { type: String, required: true },
                 quantity: { type: Number, required: true, min: 1 },
                 priceAtSale: { type: Number, required: true, min: 0 }
             }
