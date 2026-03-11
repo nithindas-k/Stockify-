@@ -13,11 +13,17 @@ export class ProductRepository implements IProductRepository {
     }
 
     async findBySku(userId: string, sku: string): Promise<IProduct | null> {
-        return await Product.findOne({ sku, userId });
+        return await Product.findOne({
+            userId,
+            sku: { $regex: new RegExp(`^${sku.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+        });
     }
 
     async findByName(userId: string, name: string): Promise<IProduct | null> {
-        return await Product.findOne({ name, userId });
+        return await Product.findOne({
+            userId,
+            name: { $regex: new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+        });
     }
 
     async findAll(userId: string, query?: string, category?: string): Promise<IProduct[]> {

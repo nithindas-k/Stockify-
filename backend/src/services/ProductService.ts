@@ -14,6 +14,8 @@ export class ProductService implements IProductService {
     }
 
     async createProduct(userId: string, data: CreateProductDTO): Promise<IProduct> {
+        if (data.name) data.name = data.name.trim();
+        if (data.sku) data.sku = data.sku.trim();
         const existingSku = await this.productRepository.findBySku(userId, data.sku);
         if (existingSku) {
             throw new Error(`Product with SKU ${data.sku} already exists.`);
@@ -49,6 +51,8 @@ export class ProductService implements IProductService {
     }
 
     async updateProduct(userId: string, id: string, data: UpdateProductDTO): Promise<IProduct> {
+        if (data.name) data.name = data.name.trim();
+        if (data.sku) data.sku = data.sku.trim();
         if (data.sku) {
             const existing = await this.productRepository.findBySku(userId, data.sku);
             if (existing && existing._id.toString() !== id) {
