@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronDown, ChevronUp } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
@@ -271,31 +271,67 @@ const ReportsPage: React.FC = () => {
             } else if (activeTab === 'ledger' && ledgerReport) {
                 tableHeaders = `
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">TXN ID</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Purchased Items</th>
-                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Voucher/Details</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Debit (Purchase)</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Credit (Payment)</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Balance</th>
                 `;
-                tableRows = ledgerReport.transactions.map((t: any) => {
+
+                // Transactions are typically new-to-old, reverse for balance calculation
+                const sortedTxns = [...ledgerReport.transactions].sort((a, b) => new Date(a.saleDate).getTime() - new Date(b.saleDate).getTime());
+                let runningBalance = 0;
+                const allLedgerRows: string[] = [];
+
+                sortedTxns.forEach((t: any) => {
                     const itemsText = t.items.map((i: any) =>
-                        `<div style="font-size: 11px; color: #4b5563;">• ${i.productName || i.productId?.name || 'Item'} (x${i.quantity})</div>`
+                        `<div style="font-size: 10px; color: #6b7280;">• ${i.productName || i.productId?.name || 'Item'} (x${i.quantity})</div>`
                     ).join('');
 
-                    return `
-                    <tr>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${new Date(t.saleDate).toLocaleDateString()}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-family: monospace; font-size: 12px;">TXN-${t._id.slice(-6).toUpperCase()}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${itemsText}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">₹${t.totalAmount.toFixed(2)}</td>
-                    </tr>
-                `}).join('');
+                    // Debit (Purchase) entry
+                    runningBalance += t.totalAmount;
+                    allLedgerRows.push(`
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 12px;">${new Date(t.saleDate).toLocaleDateString()}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-family: monospace; font-size: 11px; font-weight: bold;">TXN-${t._id.slice(-6).toUpperCase()}</div>
+                                ${itemsText}
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #ef4444;">₹${t.totalAmount.toFixed(2)}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">-</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold;">₹${runningBalance.toFixed(2)}</td>
+                        </tr>
+                    `);
+
+                    // Credit (Payment) entry - assuming fully paid as per current system
+                    runningBalance -= t.totalAmount;
+                    allLedgerRows.push(`
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px;">${new Date(t.saleDate).toLocaleDateString()}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 11px; color: #10b981;"><b>Payment Received</b> via ${t.paymentMethod || 'Cash'}</div>
+                            </td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">-</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #10b981;">₹${t.totalAmount.toFixed(2)}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold;">₹${runningBalance.toFixed(2)}</td>
+                        </tr>
+                    `);
+                });
+                tableRows = allLedgerRows.reverse().join(''); // Back to newest first for display
+
                 summaryStats = `
-                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
-                        <div style="font-size: 12px; color: #6b7280;">Total Purchases</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #111827;">${ledgerReport.summary?.totalPurchases}</div>
-                    </div>
-                    <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px;">
-                        <div style="font-size: 12px; color: #6b7280;">Lifetime Value</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #6366f1;">₹${ledgerReport.summary?.totalSpent?.toFixed(2)}</div>
+                    <div style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: #1e293b; font-weight: bold;">Statement of Account: ${ledgerReport.customer?.name}</div>
+                        <div style="font-size: 12px; color: #64748b;">${ledgerReport.customer?.address || 'N/A'} | ${ledgerReport.customer?.mobile || 'N/A'}</div>
+                        <div style="margin-top: 10px; display: flex; gap: 20px;">
+                            <div>
+                                <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Total Billing</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #1e293b;">₹${ledgerReport.summary?.totalSpent?.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Account Balance</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #10b981;">₹0.00</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -578,64 +614,89 @@ const ReportsPage: React.FC = () => {
                                 <Spinner className="mx-auto mt-8" />
                             ) : ledgerReport && selectedCustomerId ? (
                                 <>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <SummaryCard title="Lifetime Purchases" value={ledgerReport.summary?.totalPurchases || 0} />
-                                        <SummaryCard title="Lifetime Spent" value={`₹${ledgerReport.summary?.totalSpent?.toFixed(2) || '0.00'}`} />
+                                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-6 overflow-hidden relative">
+                                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                                            <Users className="size-24" />
+                                        </div>
+                                        <div className="space-y-1 relative z-10">
+                                            <div className="text-[10px] uppercase tracking-widest font-bold text-primary/60">Professional Statement</div>
+                                            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                                                {ledgerReport.customer?.name}
+                                                <Badge variant="outline" className="text-[10px] uppercase py-0">{ledgerReport.customer?.mobile}</Badge>
+                                            </h2>
+                                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                                <LayoutGrid className="size-3" /> {ledgerReport.customer?.address}
+                                            </p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-8 relative z-10">
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total Billing</p>
+                                                <p className="text-xl font-black text-foreground">₹{ledgerReport.summary?.totalSpent?.toFixed(2)}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter text-emerald-500">Net Balance</p>
+                                                <p className="text-xl font-black text-emerald-500">₹0.00</p>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg mt-6">
                                         <Table id="ledger-table">
-                                            <TableHeader className="bg-white/5">
+                                            <TableHeader className="bg-white/5 uppercase">
                                                 <TableRow className="border-white/10">
-                                                    <TableHead>Date</TableHead>
-                                                    <TableHead>Transaction ID</TableHead>
-                                                    <TableHead>Purchased Items</TableHead>
-                                                    <TableHead className="text-right">Amount</TableHead>
+                                                    <TableHead className="text-[10px]">Date</TableHead>
+                                                    <TableHead className="text-[10px]">Reference / Voucher</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Debit (+)</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Credit (-)</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Balance</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {pagedLedger.length === 0 ? (
-                                                    <TableRow><TableCell colSpan={4} className="text-center py-6 text-muted-foreground">No transactions found for this customer.</TableCell></TableRow>
+                                                    <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground opacity-50 italic">No financial transactions found for this period.</TableCell></TableRow>
                                                 ) : (
-                                                    pagedLedger.map((t: any) => (
-                                                        <TableRow key={t._id} className="border-white/5">
-                                                            <TableCell className="text-sm">
-                                                                {new Date(t.saleDate).toLocaleDateString()}
-                                                                <div className="text-[10px] text-muted-foreground">{t.paymentMethod}</div>
-                                                            </TableCell>
-                                                            <TableCell className="font-semibold text-xs tracking-wider">TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
-                                                            <TableCell className="min-w-[200px] align-top">
-                                                                <div className="flex flex-col gap-1.5">
-                                                                    {(expandedRows[t._id] ? t.items : t.items?.slice(0, 1))?.map((item: any, idx: number) => (
-                                                                        <div key={idx} className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 border border-white/5 hover:border-white/10 transition-colors">
-                                                                            <div className="flex items-center gap-2 min-w-0">
-                                                                                <ChevronRight className="size-3 text-primary/50 shrink-0" />
-                                                                                <span className="truncate text-[10px] font-medium text-foreground">
-                                                                                    {item.productName || item.productId?.name || 'Item'}
-                                                                                    <span className="ml-1 text-muted-foreground font-normal">x{item.quantity}</span>
-                                                                                </span>
+                                                    pagedLedger.map((t: any) => {
+                                                        // For a true ledger feel, we show both the Purchase and Payment
+                                                        // In this system, they happen simultaneously
+                                                        return (
+                                                            <React.Fragment key={t._id}>
+                                                                {/* Debit Row (Purchase) */}
+                                                                <TableRow className="border-white/5 bg-white/[0.02] group">
+                                                                    <TableCell className="text-[11px] py-3">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
+                                                                    <TableCell className="align-top py-3 min-w-[200px]">
+                                                                        <div className="flex flex-col gap-1.5">
+                                                                            <div className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                                                                                <FileText className="size-3" /> INV-{t._id.slice(-6).toUpperCase()}
                                                                             </div>
-                                                                            <span className="text-[10px] font-bold text-primary/90 ml-2">₹{(item.quantity * item.priceAtSale).toFixed(0)}</span>
+                                                                            <div className="flex flex-wrap gap-1">
+                                                                                {t.items?.map((item: any, idx: number) => (
+                                                                                    <Badge key={idx} variant="secondary" className="text-[9px] px-1 py-0 h-4 font-normal bg-white/5 border-white/10">
+                                                                                        {item.productName || item.productId?.name} x{item.quantity}
+                                                                                    </Badge>
+                                                                                ))}
+                                                                            </div>
                                                                         </div>
-                                                                    ))}
-
-                                                                    {t.items?.length > 1 && (
-                                                                        <button
-                                                                            onClick={() => toggleRow(t._id)}
-                                                                            className="flex items-center gap-1 text-[9px] font-bold text-primary/60 hover:text-primary transition-colors px-1"
-                                                                        >
-                                                                            {expandedRows[t._id] ? (
-                                                                                <><ChevronUp className="size-3" /> Hide</>
-                                                                            ) : (
-                                                                                <><ChevronDown className="size-3" /> +{t.items.length - 1} more</>
-                                                                            )}
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell className="text-right font-medium text-primary">₹{t.totalAmount.toFixed(2)}</TableCell>
-                                                        </TableRow>
-                                                    ))
+                                                                    </TableCell>
+                                                                    <TableCell className="text-right font-bold text-red-500/80 text-xs">₹{t.totalAmount.toFixed(2)}</TableCell>
+                                                                    <TableCell className="text-right text-muted-foreground/30 text-[10px]">-</TableCell>
+                                                                    <TableCell className="text-right font-black text-xs text-foreground">₹{t.totalAmount.toFixed(2)}</TableCell>
+                                                                </TableRow>
+                                                                {/* Credit Row (Payment) */}
+                                                                <TableRow className="border-white/5 bg-transparent group border-b-2">
+                                                                    <TableCell className="text-[10px] py-2 opacity-50 italic">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
+                                                                    <TableCell className="py-2">
+                                                                        <div className="flex items-center gap-2 text-[10px] text-emerald-500 font-bold">
+                                                                            <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                                            Payment via {t.paymentMethod}
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell className="text-right text-muted-foreground/30 text-[10px]">-</TableCell>
+                                                                    <TableCell className="text-right font-bold text-emerald-500/80 text-xs">₹{t.totalAmount.toFixed(2)}</TableCell>
+                                                                    <TableCell className="text-right font-black text-xs text-emerald-500">₹0.00</TableCell>
+                                                                </TableRow>
+                                                            </React.Fragment>
+                                                        );
+                                                    })
                                                 )}
                                             </TableBody>
                                         </Table>
