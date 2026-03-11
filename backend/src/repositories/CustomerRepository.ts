@@ -12,6 +12,10 @@ export class CustomerRepository implements ICustomerRepository {
         return await Customer.findOne({ _id: id, userId });
     }
 
+    async findByMobile(userId: string, mobile: string): Promise<ICustomer | null> {
+        return await Customer.findOne({ userId, mobile });
+    }
+
     async findAll(userId: string, query?: string): Promise<ICustomer[]> {
         const filter: any = { userId };
         if (query) {

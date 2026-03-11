@@ -74,8 +74,32 @@ const CustomersPage: React.FC = () => {
     };
 
     const handleSaveCustomer = async () => {
-        if (!formData.name || !formData.mobile || !formData.address) {
+        const { name, mobile, address } = formData;
+
+        if (!name?.trim() || !mobile?.trim() || !address?.trim()) {
             toast.error('Please fill all required fields');
+            return;
+        }
+
+        if (name.trim().length < 2) {
+            toast.error('Name must be at least 2 characters');
+            return;
+        }
+
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        if (!nameRegex.test(name.trim())) {
+            toast.error('Name should only contain letters and spaces');
+            return;
+        }
+
+        const mobileRegex = /^\d{10}$/;
+        if (!mobileRegex.test(mobile.trim())) {
+            toast.error('Mobile number must be exactly 10 digits');
+            return;
+        }
+
+        if (address.trim().length < 5) {
+            toast.error('Address must be at least 5 characters');
             return;
         }
 
@@ -91,7 +115,7 @@ const CustomersPage: React.FC = () => {
             setIsAddModalOpen(false);
             fetchCustomers();
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to save customer');
+            toast.error(error.response?.data?.message || error.message || 'Failed to save customer');
         } finally {
             setSaving(false);
         }
@@ -187,7 +211,17 @@ const CustomersPage: React.FC = () => {
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
                                             <Label htmlFor="mobile" className="sm:text-right font-medium">Mobile <span className="text-red-500">*</span></Label>
-                                            <Input id="mobile" value={formData.mobile} onChange={(e) => setFormData({ ...formData, mobile: e.target.value })} className="sm:col-span-3 border-border bg-background" />
+                                            <Input
+                                                id="mobile"
+                                                maxLength={10}
+                                                placeholder="10-digit number"
+                                                value={formData.mobile}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                                    setFormData({ ...formData, mobile: val });
+                                                }}
+                                                className="sm:col-span-3 border-border bg-background"
+                                            />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
                                             <Label htmlFor="address" className="sm:text-right font-medium">Address <span className="text-red-500">*</span></Label>

@@ -6,6 +6,10 @@ export class CustomerService implements ICustomerService {
     constructor(private customerRepository: ICustomerRepository) { }
 
     async createCustomer(userId: string, data: CreateCustomerDTO) {
+        const existing = await this.customerRepository.findByMobile(userId, data.mobile);
+        if (existing) {
+            throw new Error(`Customer with mobile ${data.mobile} already exists.`);
+        }
         return await this.customerRepository.create(userId, data);
     }
 
@@ -20,6 +24,12 @@ export class CustomerService implements ICustomerService {
     }
 
     async updateCustomer(userId: string, id: string, data: UpdateCustomerDTO) {
+        if (data.mobile) {
+            const existing = await this.customerRepository.findByMobile(userId, data.mobile);
+            if (existing && existing._id.toString() !== id) {
+                throw new Error(`Customer with mobile ${data.mobile} already exists.`);
+            }
+        }
         const customer = await this.customerRepository.update(userId, id, data);
         if (!customer) throw new Error('Customer not found');
         return customer;

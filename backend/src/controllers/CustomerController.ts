@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ICustomerService } from '../services/interfaces/ICustomerService';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { ICustomerController } from './interfaces/ICustomerController';
+import { CreateCustomerSchema, UpdateCustomerSchema } from '../dtos/CustomerDTO';
 
 export class CustomerController implements ICustomerController {
     constructor(private customerService: ICustomerService) { }
@@ -9,9 +10,14 @@ export class CustomerController implements ICustomerController {
     createCustomer = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = (req as AuthRequest).user.id;
-            const customer = await this.customerService.createCustomer(userId, req.body);
+            const validatedData = CreateCustomerSchema.parse(req.body);
+            const customer = await this.customerService.createCustomer(userId, validatedData);
             res.status(201).json({ message: 'Customer created successfully', data: customer });
         } catch (error: any) {
+            if (error.name === 'ZodError') {
+                res.status(400).json({ message: 'Validation failed', errors: error.errors });
+                return;
+            }
             res.status(400).json({ message: error.message });
         }
     };
@@ -40,9 +46,14 @@ export class CustomerController implements ICustomerController {
     updateCustomer = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = (req as AuthRequest).user.id;
-            const customer = await this.customerService.updateCustomer(userId, req.params.id as string, req.body);
+            const validatedData = UpdateCustomerSchema.parse(req.body);
+            const customer = await this.customerService.updateCustomer(userId, req.params.id as string, validatedData);
             res.status(200).json({ message: 'Customer updated successfully', data: customer });
         } catch (error: any) {
+            if (error.name === 'ZodError') {
+                res.status(400).json({ message: 'Validation failed', errors: error.errors });
+                return;
+            }
             res.status(400).json({ message: error.message });
         }
     };
