@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserSidebar, SidebarToggleBtn } from '../../components/user/UserSidebar';
 import { useAuthStore } from '../../store/authStore';
-import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid } from 'lucide-react';
+import { FileText, TrendingUp, PackageSearch, Users, Download, Printer, Mail, LayoutGrid, Package, ChevronRight } from 'lucide-react';
 import { reportService } from '../../services/report/reportService';
 import { customerService } from '../../services/customer/customerService';
 import { toast } from 'sonner';
@@ -445,13 +445,26 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="text-[10px] text-muted-foreground">{new Date(s.saleDate).toLocaleString()}</div>
                                                             </TableCell>
                                                             <TableCell>{s.customerName}</TableCell>
-                                                            <TableCell>
-                                                                <div className="space-y-1 py-1">
+                                                            <TableCell className="min-w-[250px]">
+                                                                <div className="flex flex-col gap-1.5 py-1">
                                                                     {s.items?.map((item: any, idx: number) => (
-                                                                        <div key={idx} className="text-[11px] leading-tight flex items-center gap-1.5">
-                                                                            <span className="font-medium text-foreground">{item.productName || item.productId?.name || 'Unknown Product'}</span>
-                                                                            <span className="text-muted-foreground">({item.quantity} × ₹{item.priceAtSale})</span>
-                                                                            <span className="ml-auto font-bold text-primary">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
+                                                                        <div key={idx} className="group relative flex items-center gap-2 rounded-lg bg-primary/5 p-1.5 border border-primary/10 transition-all hover:bg-primary/10 hover:border-primary/20">
+                                                                            <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-white/10 text-primary shadow-sm">
+                                                                                <Package className="size-3.5" />
+                                                                            </div>
+                                                                            <div className="flex flex-1 flex-col min-w-0">
+                                                                                <span className="truncate text-[11px] font-semibold text-foreground">
+                                                                                    {item.productName || item.productId?.name || 'Unknown Product'}
+                                                                                </span>
+                                                                                <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground font-medium">
+                                                                                    <span>{item.quantity} units</span>
+                                                                                    <span className="size-0.5 rounded-full bg-muted-foreground/30"></span>
+                                                                                    <span>₹{item.priceAtSale}/unit</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div className="text-[11px] font-bold text-primary">
+                                                                                ₹{(item.quantity * item.priceAtSale).toFixed(0)}
+                                                                            </div>
                                                                         </div>
                                                                     ))}
                                                                 </div>
@@ -571,12 +584,18 @@ const ReportsPage: React.FC = () => {
                                                                 <div className="text-[10px] text-muted-foreground">{t.paymentMethod}</div>
                                                             </TableCell>
                                                             <TableCell className="font-semibold text-xs tracking-wider">TXN-{t._id.slice(-6).toUpperCase()}</TableCell>
-                                                            <TableCell>
-                                                                <div className="space-y-1">
+                                                            <TableCell className="min-w-[200px]">
+                                                                <div className="flex flex-col gap-1.5">
                                                                     {t.items?.map((item: any, idx: number) => (
-                                                                        <div key={idx} className="text-[10px] text-muted-foreground italic flex justify-between">
-                                                                            <span>• {item.productName || item.productId?.name || 'Item'} (x{item.quantity})</span>
-                                                                            <span className="ml-2 font-medium">₹{(item.quantity * item.priceAtSale).toFixed(2)}</span>
+                                                                        <div key={idx} className="flex items-center justify-between rounded-md bg-white/5 px-2 py-1.5 border border-white/5 hover:border-white/10 transition-colors">
+                                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                                <ChevronRight className="size-3 text-primary/50 shrink-0" />
+                                                                                <span className="truncate text-[10px] font-medium text-foreground">
+                                                                                    {item.productName || item.productId?.name || 'Item'}
+                                                                                    <span className="ml-1 text-muted-foreground font-normal">x{item.quantity}</span>
+                                                                                </span>
+                                                                            </div>
+                                                                            <span className="text-[10px] font-bold text-primary/90 ml-2">₹{(item.quantity * item.priceAtSale).toFixed(0)}</span>
                                                                         </div>
                                                                     ))}
                                                                 </div>
