@@ -84,13 +84,13 @@ const InventoryPage: React.FC = () => {
             return;
         }
 
-        if (formData.price !== undefined && formData.price < 0) {
-            toast.error('Price cannot be negative');
+        if (formData.price === undefined || formData.price <= 0) {
+            toast.error('Price must be greater than 0');
             return;
         }
 
-        if (formData.quantity !== undefined && formData.quantity < 0) {
-            toast.error('Quantity cannot be negative');
+        if (formData.quantity === undefined || formData.quantity <= 0) {
+            toast.error('Quantity must be greater than 0');
             return;
         }
 
@@ -223,7 +223,7 @@ const InventoryPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="price" className="sm:text-right font-medium">Price (₹)</Label>
+                                            <Label htmlFor="price" className="sm:text-right font-medium">Price (₹) <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id="price"
                                                 type="number"
@@ -239,7 +239,7 @@ const InventoryPage: React.FC = () => {
                                             />
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="qty" className="sm:text-right font-medium">Quantity</Label>
+                                            <Label htmlFor="qty" className="sm:text-right font-medium">Quantity <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id="qty"
                                                 type="number"
