@@ -148,7 +148,7 @@ const ReportsPage: React.FC = () => {
 
 
     const getTableId = () => `${activeTab}-table-full`;
-    const getReportTitle = () => activeTab === 'sales' ? 'Sales Report' : activeTab === 'items' ? 'Inventory Items Report' : 'Customer Ledger';
+    const getReportTitle = () => activeTab === 'sales' ? 'Sales Report' : activeTab === 'items' ? 'Inventory Items Report' : 'Customer History Report';
 
     const handlePrint = () => {
         const table = document.getElementById(getTableId());
@@ -271,52 +271,30 @@ const ReportsPage: React.FC = () => {
             } else if (activeTab === 'ledger' && ledgerReport) {
                 tableHeaders = `
                     <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Date</th>
-                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Voucher/Details</th>
-                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Debit (Purchase)</th>
-                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Credit (Payment)</th>
-                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Balance</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 2px solid #6366f1; color: #1f2937;">Reference (Items)</th>
+                    <th style="padding: 12px; text-align: center; border-bottom: 2px solid #6366f1; color: #1f2937;">Mode</th>
+                    <th style="padding: 12px; text-align: right; border-bottom: 2px solid #6366f1; color: #1f2937;">Amount</th>
                 `;
 
-                // Transactions are typically new-to-old, reverse for balance calculation
-                const sortedTxns = [...ledgerReport.transactions].sort((a, b) => new Date(a.saleDate).getTime() - new Date(b.saleDate).getTime());
-                let runningBalance = 0;
-                const allLedgerRows: string[] = [];
-
-                sortedTxns.forEach((t: any) => {
-                    const itemsText = t.items.map((i: any) =>
-                        `<div style="font-size: 10px; color: #6b7280;">• ${i.productName || i.productId?.name || 'Item'} (x${i.quantity})</div>`
+                tableRows = ledgerReport.transactions.map((t: any) => {
+                    const itemsList = t.items.map((i: any) =>
+                        `<div style="font-size: 10px; color: #64748b;">• ${i.productName || i.productId?.name} (x${i.quantity})</div>`
                     ).join('');
 
-                    // Debit (Purchase) entry
-                    runningBalance += t.totalAmount;
-                    allLedgerRows.push(`
+                    return `
                         <tr>
                             <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 12px;">${new Date(t.saleDate).toLocaleDateString()}</td>
                             <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
-                                <div style="font-family: monospace; font-size: 11px; font-weight: bold;">TXN-${t._id.slice(-6).toUpperCase()}</div>
-                                ${itemsText}
+                                <div style="font-weight: bold; color: #1e293b; font-size: 11px;">REF: ${t._id.slice(-6).toUpperCase()}</div>
+                                ${itemsList}
                             </td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #ef4444;">₹${t.totalAmount.toFixed(2)}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">-</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold;">₹${runningBalance.toFixed(2)}</td>
-                        </tr>
-                    `);
-
-                    // Credit (Payment) entry - assuming fully paid as per current system
-                    runningBalance -= t.totalAmount;
-                    allLedgerRows.push(`
-                        <tr>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px;">${new Date(t.saleDate).toLocaleDateString()}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">
-                                <div style="font-size: 11px; color: #10b981;"><b>Payment Received</b> via ${t.paymentMethod || 'Cash'}</div>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                                <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; border: 1px solid #e2e8f0;">${t.paymentMethod}</span>
                             </td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">-</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #10b981;">₹${t.totalAmount.toFixed(2)}</td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold;">₹${runningBalance.toFixed(2)}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">₹${t.totalAmount.toFixed(2)}</td>
                         </tr>
-                    `);
-                });
-                tableRows = allLedgerRows.reverse().join(''); // Back to newest first for display
+                    `;
+                }).join('');
 
                 summaryStats = `
                     <div style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
@@ -429,7 +407,7 @@ const ReportsPage: React.FC = () => {
                                     <PackageSearch className="w-4 h-4" /> Items
                                 </TabsTrigger>
                                 <TabsTrigger value="ledger" className="flex-1 gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg">
-                                    <Users className="w-4 h-4" /> Ledger
+                                    <Users className="w-4 h-4" /> History
                                 </TabsTrigger>
                             </TabsList>
 
@@ -597,10 +575,10 @@ const ReportsPage: React.FC = () => {
                         {/* --- CUSTOMER LEDGER TAB --- */}
                         <TabsContent value="ledger" className="space-y-6 animate-in fade-in-50 zoom-in-95 duration-300">
                             <div className="bg-card border border-white/10 rounded-xl p-6 shadow-lg space-y-4">
-                                <h3 className="text-lg font-medium">Customer Selection</h3>
+                                <h3 className="text-lg font-medium text-foreground/80">Select Customer</h3>
                                 <Select value={selectedCustomerId} onValueChange={setSelectedCustomerId}>
-                                    <SelectTrigger className="w-full max-w-md bg-background border-border">
-                                        <SelectValue placeholder="Search or select a customer to view ledger..." />
+                                    <SelectTrigger className="w-full max-w-md bg-background/50 border-white/10">
+                                        <SelectValue placeholder="Begin typing customer name..." />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {customers.map((c: any) => (
@@ -619,7 +597,7 @@ const ReportsPage: React.FC = () => {
                                             <Users className="size-24" />
                                         </div>
                                         <div className="space-y-1 relative z-10">
-                                            <div className="text-[10px] uppercase tracking-widest font-bold text-primary/60">Professional Statement</div>
+                                            <div className="text-[10px] uppercase tracking-widest font-black text-primary/60">Customer Statement</div>
                                             <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
                                                 {ledgerReport.customer?.name}
                                                 <Badge variant="outline" className="text-[10px] uppercase py-0">{ledgerReport.customer?.mobile}</Badge>
@@ -634,8 +612,8 @@ const ReportsPage: React.FC = () => {
                                                 <p className="text-xl font-black text-foreground">₹{ledgerReport.summary?.totalSpent?.toFixed(2)}</p>
                                             </div>
                                             <div>
-                                                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter text-emerald-500">Net Balance</p>
-                                                <p className="text-xl font-black text-emerald-500">₹0.00</p>
+                                                <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Visit Count</p>
+                                                <p className="text-xl font-black text-foreground">{ledgerReport.transactions?.length || 0} Sales</p>
                                             </div>
                                         </div>
                                     </div>
@@ -643,60 +621,51 @@ const ReportsPage: React.FC = () => {
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg mt-6">
                                         <Table id="ledger-table">
                                             <TableHeader className="bg-white/5 uppercase">
-                                                <TableRow className="border-white/10">
+                                                <TableRow className="border-white/10 uppercase">
                                                     <TableHead className="text-[10px]">Date</TableHead>
-                                                    <TableHead className="text-[10px]">Reference / Voucher</TableHead>
-                                                    <TableHead className="text-[10px] text-right">Debit (+)</TableHead>
-                                                    <TableHead className="text-[10px] text-right">Credit (-)</TableHead>
-                                                    <TableHead className="text-[10px] text-right">Balance</TableHead>
+                                                    <TableHead className="text-[10px]">Reference & Items</TableHead>
+                                                    <TableHead className="text-[10px] text-center">Payment Mode</TableHead>
+                                                    <TableHead className="text-[10px] text-right">Total Amount</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {pagedLedger.length === 0 ? (
                                                     <TableRow><TableCell colSpan={5} className="text-center py-12 text-muted-foreground opacity-50 italic">No financial transactions found for this period.</TableCell></TableRow>
                                                 ) : (
-                                                    pagedLedger.map((t: any) => {
-                                                        // For a true ledger feel, we show both the Purchase and Payment
-                                                        // In this system, they happen simultaneously
-                                                        return (
-                                                            <React.Fragment key={t._id}>
-                                                                {/* Debit Row (Purchase) */}
-                                                                <TableRow className="border-white/5 bg-white/[0.02] group">
-                                                                    <TableCell className="text-[11px] py-3">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
-                                                                    <TableCell className="align-top py-3 min-w-[200px]">
-                                                                        <div className="flex flex-col gap-1.5">
-                                                                            <div className="font-bold text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-1">
-                                                                                <FileText className="size-3" /> INV-{t._id.slice(-6).toUpperCase()}
+                                                    pagedLedger.map((t: any) => (
+                                                        <TableRow key={t._id} className="border-white/5 transition-colors hover:bg-white/[0.02]">
+                                                            <TableCell className="text-[11px] py-4">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
+                                                            <TableCell className="align-top py-4 min-w-[300px]">
+                                                                <div className="flex flex-col gap-3">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <FileText className="size-3 text-primary" />
+                                                                        <span className="font-mono text-[10px] font-black text-foreground tracking-widest">
+                                                                            REF-{t._id.slice(-6).toUpperCase()}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="space-y-1.5 pl-4 border-l border-white/10">
+                                                                        {t.items?.map((item: any, idx: number) => (
+                                                                            <div key={idx} className="flex items-center justify-between text-[11px]">
+                                                                                <span className="text-muted-foreground font-medium">
+                                                                                    {item.productName || item.productId?.name || 'Product'}
+                                                                                    <span className="ml-2 text-[9px] text-primary/60 font-black">x{item.quantity}</span>
+                                                                                </span>
+                                                                                <span className="text-[10px] font-bold text-foreground/80">₹{(item.priceAtSale || item.productId?.price || 0).toFixed(2)}</span>
                                                                             </div>
-                                                                            <div className="flex flex-wrap gap-1">
-                                                                                {t.items?.map((item: any, idx: number) => (
-                                                                                    <Badge key={idx} variant="secondary" className="text-[9px] px-1 py-0 h-4 font-normal bg-white/5 border-white/10">
-                                                                                        {item.productName || item.productId?.name} x{item.quantity}
-                                                                                    </Badge>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    </TableCell>
-                                                                    <TableCell className="text-right font-bold text-red-500/80 text-xs">₹{t.totalAmount.toFixed(2)}</TableCell>
-                                                                    <TableCell className="text-right text-muted-foreground/30 text-[10px]">-</TableCell>
-                                                                    <TableCell className="text-right font-black text-xs text-foreground">₹{t.totalAmount.toFixed(2)}</TableCell>
-                                                                </TableRow>
-                                                                {/* Credit Row (Payment) */}
-                                                                <TableRow className="border-white/5 bg-transparent group border-b-2">
-                                                                    <TableCell className="text-[10px] py-2 opacity-50 italic">{new Date(t.saleDate).toLocaleDateString()}</TableCell>
-                                                                    <TableCell className="py-2">
-                                                                        <div className="flex items-center gap-2 text-[10px] text-emerald-500 font-bold">
-                                                                            <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                                                            Payment via {t.paymentMethod}
-                                                                        </div>
-                                                                    </TableCell>
-                                                                    <TableCell className="text-right text-muted-foreground/30 text-[10px]">-</TableCell>
-                                                                    <TableCell className="text-right font-bold text-emerald-500/80 text-xs">₹{t.totalAmount.toFixed(2)}</TableCell>
-                                                                    <TableCell className="text-right font-black text-xs text-emerald-500">₹0.00</TableCell>
-                                                                </TableRow>
-                                                            </React.Fragment>
-                                                        );
-                                                    })
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-center py-4">
+                                                                <Badge variant="outline" className="text-[10px] uppercase font-black px-2 py-0 border-primary/20 bg-primary/5 text-primary">
+                                                                    {t.paymentMethod}
+                                                                </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="text-right py-4 font-black text-foreground text-sm">
+                                                                ₹{t.totalAmount.toFixed(2)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))
                                                 )}
                                             </TableBody>
                                         </Table>
