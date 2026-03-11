@@ -133,9 +133,45 @@ const SalesPage: React.FC = () => {
         const newItems = [...formItems];
         if (field === 'productId') {
             const product = allProducts.find(p => p._id === value);
-            newItems[index].productId = value;
-            if (product) {
+            if (!product) return;
+
+
+            const existingIndex = newItems.findIndex((item, i) => i !== index && item.productId === value);
+            if (existingIndex !== -1) {
+
+                const currentQty = newItems[index].quantity || 1;
+                const totalQty = newItems[existingIndex].quantity + currentQty;
+
+                if (totalQty > product.quantity) {
+                    toast.error(`Only ${product.quantity} in stock. Merged quantity capped.`);
+                    newItems[existingIndex].quantity = product.quantity;
+                } else {
+                    newItems[existingIndex].quantity = totalQty;
+                    toast.info(`Product already in cart. Merging quantity.`);
+                }
+
+
+                newItems.splice(index, 1);
+            } else {
+                newItems[index].productId = value;
                 newItems[index].pricePerUnit = product.price;
+                if (newItems[index].quantity > product.quantity) {
+                    newItems[index].quantity = product.quantity;
+                    toast.warning(`Stock limit reached: ${product.quantity} available`);
+                }
+            }
+        } else if (field === 'quantity') {
+            let qty = Number(value);
+            if (qty < 1) qty = 1;
+
+            const item = newItems[index];
+            const product = allProducts.find(p => p._id === item.productId);
+
+            if (product && qty > product.quantity) {
+                toast.error(`Insufficient stock! Only ${product.quantity} units available.`);
+                newItems[index].quantity = product.quantity;
+            } else {
+                newItems[index].quantity = qty;
             }
         } else {
             newItems[index] = { ...newItems[index], [field]: value };
