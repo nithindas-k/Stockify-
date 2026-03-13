@@ -9,21 +9,21 @@ export class MailService {
   constructor() {
     const isGmail = process.env.SMTP_HOST === 'smtp.gmail.com' || (process.env.SMTP_USER && process.env.SMTP_USER.endsWith('@gmail.com'));
     
-    console.log(`[MailService] Initializing. Host: ${process.env.SMTP_HOST}, IsGmail: ${isGmail}`);
-    
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('[MailService] CRITICAL: SMTP_USER or SMTP_PASS is missing in environment variables');
-    }
+    console.log(`[MailService] Init: Host=${process.env.SMTP_HOST}, User=${process.env.SMTP_USER}, IsGmail=${isGmail}`);
 
     if (isGmail) {
-      console.log('[MailService] Using Gmail service configuration');
+      console.log('[MailService] Using Optimized Gmail Config');
       this.transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        connectionTimeout: 15000, // 15 seconds
+        pool: true, // Use pooled connections
+        logger: true, // Log to console
+        debug: true, // Include SMTP traffic in logs
+        connectionTimeout: 20000,
+        greetingTimeout: 20000,
       });
     } else {
       const port = Number(process.env.SMTP_PORT) || 587;
@@ -39,7 +39,9 @@ export class MailService {
         tls: {
           rejectUnauthorized: false
         },
-        connectionTimeout: 15000,
+        logger: true,
+        debug: true,
+        connectionTimeout: 20000,
       });
     }
   }
