@@ -42,8 +42,16 @@ const SignupPage: React.FC = () => {
 
         if (!password) {
             newErrors.password = 'Password is required';
-        } else if (password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        } else if (password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters';
+        } else if (!/[A-Z]/.test(password)) {
+            newErrors.password = 'Include at least one uppercase letter';
+        } else if (!/[a-z]/.test(password)) {
+            newErrors.password = 'Include at least one lowercase letter';
+        } else if (!/\d/.test(password)) {
+            newErrors.password = 'Include at least one number';
+        } else if (!/[@$!%*?&]/.test(password)) {
+            newErrors.password = 'Include at least one special character (@$!%*?&)';
         }
 
         if (!confirmPassword) {
@@ -141,7 +149,10 @@ const SignupPage: React.FC = () => {
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="password" className={errors.password ? 'text-destructive' : ''}>Password</Label>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password" className={errors.password ? 'text-destructive' : ''}>Password</Label>
+                                    <span className="text-[10px] text-muted-foreground">Min. 8 chars, 1 uppercase, 1 special</span>
+                                </div>
                                 <div className="relative">
                                     <Input
                                         id="password"
