@@ -9,21 +9,23 @@ export class MailService {
   constructor() {
     const isGmail = process.env.SMTP_HOST === 'smtp.gmail.com' || (process.env.SMTP_USER && process.env.SMTP_USER.endsWith('@gmail.com'));
     
-    console.log(`[MailService] Init: Host=${process.env.SMTP_HOST}, User=${process.env.SMTP_USER}, IsGmail=${isGmail}`);
+    console.log(`[MailService] Init: Host=${process.env.SMTP_HOST}, User=${process.env.SMTP_USER}`);
 
     if (isGmail) {
-      console.log('[MailService] Using Optimized Gmail Config');
+      console.log('[MailService] Using Explicit Gmail SSL (Port 465)');
       this.transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, 
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        pool: true, // Use pooled connections
-        logger: true, // Log to console
-        debug: true, // Include SMTP traffic in logs
-        connectionTimeout: 20000,
-        greetingTimeout: 20000,
+        pool: true,
+        logger: true,
+        debug: true,
+        connectionTimeout: 30000, // 30 seconds
+        greetingTimeout: 30000,
       });
     } else {
       const port = Number(process.env.SMTP_PORT) || 587;
@@ -41,7 +43,7 @@ export class MailService {
         },
         logger: true,
         debug: true,
-        connectionTimeout: 20000,
+        connectionTimeout: 30000,
       });
     }
   }
