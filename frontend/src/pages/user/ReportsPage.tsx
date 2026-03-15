@@ -201,11 +201,57 @@ const ReportsPage: React.FC = () => {
     };
 
     const handleExportPDF = () => {
-        const table = document.getElementById(getTableId());
-        if (!table) return toast.error("No data available to export.");
         const doc = new jsPDF();
         doc.text(getReportTitle(), 14, 15);
-        autoTable(doc, { html: `#${getTableId()}`, startY: 20 });
+
+        let head: string[][] = [];
+        let body: any[][] = [];
+
+        if (activeTab === 'sales') {
+            if (!salesReport?.sales?.length) return toast.error("No data available to export.");
+            head = [['Transaction ID', 'Date', 'Customer', 'Items List', 'Total Amount']];
+            body = salesReport.sales.map((s: any) => [
+                `TXN-${s._id.slice(-6).toUpperCase()}`,
+                new Date(s.saleDate).toLocaleString(),
+                s.customerName,
+                s.items?.map((i: any) => `${i.productName || i.productId?.name || 'Unknown'} (${i.quantity} x Rs.${i.priceAtSale})`).join(', ') || '',
+                `Rs.${s.totalAmount?.toFixed(2) || '0.00'}`
+            ]);
+        } else if (activeTab === 'items') {
+            if (!itemsReport?.items?.length) return toast.error("No data available to export.");
+            head = [['Product', 'SKU', 'Category', 'Stock Level', 'Price', 'Total Value']];
+            body = itemsReport.items.map((item: any) => [
+                item.name,
+                item.sku,
+                item.category || 'N/A',
+                item.quantity?.toString() || '0',
+                `Rs.${item.price?.toFixed(2) || '0.00'}`,
+                `Rs.${((item.price || 0) * (item.quantity || 0)).toFixed(2)}`
+            ]);
+        } else if (activeTab === 'ledger') {
+            if (!ledgerReport?.transactions?.length) return toast.error("No data available to export.");
+            head = [['Date', 'Transaction ID', 'Items List', 'Payment', 'Amount']];
+            body = ledgerReport.transactions.map((t: any) => [
+                new Date(t.saleDate).toLocaleDateString(),
+                `TXN-${t._id.slice(-6).toUpperCase()}`,
+                t.items?.map((i: any) => `${i.productName || i.productId?.name || 'Item'} (${i.quantity} x Rs.${i.priceAtSale})`).join(', ') || '',
+                t.paymentMethod || 'Unknown',
+                `Rs.${t.totalAmount?.toFixed(2) || '0.00'}`
+            ]);
+        } else {
+            return toast.error("Unsupported report type for PDF export.");
+        }
+
+        autoTable(doc, {
+            head,
+            body,
+            startY: 20,
+            styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
+            headStyles: { fillColor: [99, 102, 241], textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [245, 247, 250] },
+            margin: { top: 20, left: 14, right: 14 }
+        });
+
         doc.save(`${activeTab}_report.pdf`);
         toast.success("PDF Downloaded");
     };
