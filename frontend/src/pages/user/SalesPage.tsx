@@ -429,7 +429,7 @@ const SalesPage: React.FC = () => {
                                                                 <SelectContent>
                                                                     {allProducts.map(p => (
                                                                         <SelectItem key={p.id} value={p.id} disabled={p.quantity <= 0}>
-                                                                            {p.name} - â‚¹{p.price} {p.quantity <= 0 ? '(Out of Stock)' : `(${p.quantity} in stock)`}
+                                                                            {p.name} - ₹{p.price} {p.quantity <= 0 ? '(Out of Stock)' : `(${p.quantity} in stock)`}
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -445,7 +445,7 @@ const SalesPage: React.FC = () => {
                                                             />
                                                         </div>
                                                         <div className="w-24 pb-2.5 text-right font-medium">
-                                                            â‚¹{(item.pricePerUnit * item.quantity).toFixed(2)}
+                                                            ₹{(item.pricePerUnit * item.quantity).toFixed(2)}
                                                         </div>
                                                         <button
                                                             onClick={() => removeItemLine(idx)}
@@ -461,7 +461,7 @@ const SalesPage: React.FC = () => {
 
                                     <div className="flex justify-between items-center px-1 mb-2">
                                         <span className="text-muted-foreground">Total Display:</span>
-                                        <span className="text-2xl font-bold text-primary">â‚¹{modalTotal.toFixed(2)}</span>
+                                        <span className="text-2xl font-bold text-primary">₹{modalTotal.toFixed(2)}</span>
                                     </div>
 
                                     <DialogFooter>
@@ -523,7 +523,7 @@ const SalesPage: React.FC = () => {
                                                 <Badge variant="outline" className="border-white/10">{sale.paymentMethod}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <div className="font-bold text-lg text-primary">â‚¹{sale.totalAmount.toFixed(2)}</div>
+                                                <div className="font-bold text-lg text-primary">₹{sale.totalAmount.toFixed(2)}</div>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -568,7 +568,7 @@ const SalesPage: React.FC = () => {
                                         </div>
                                         <div className="pt-2 mt-2 border-t border-white/5 flex justify-between items-center">
                                             <span className="text-muted-foreground text-xs">Grand Total</span>
-                                            <span className="font-bold text-primary">â‚¹{sale.totalAmount.toFixed(2)}</span>
+                                            <span className="font-bold text-primary">₹{sale.totalAmount.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>

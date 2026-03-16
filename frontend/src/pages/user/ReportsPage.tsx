@@ -285,8 +285,8 @@ const ReportsPage: React.FC = () => {
                     const itemsList = s.items.map((i: any) =>
                         `<div style="font-size: 11px; margin-bottom: 2px;">
                             â€¢ ${i.productName || i.productId?.name || 'Unknown Product'}
-                            <span style="color: #6b7280;">(x${i.quantity} @ â‚¹${i.priceAtSale})</span>
-                            = <b>â‚¹${(i.quantity * i.priceAtSale).toFixed(2)}</b>
+                            <span style="color: #6b7280;">(x${i.quantity} @ ₹${i.priceAtSale})</span>
+                            = <b>₹${(i.quantity * i.priceAtSale).toFixed(2)}</b>
                         </div>`
                     ).join('');
 
@@ -298,13 +298,13 @@ const ReportsPage: React.FC = () => {
                         </td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${s.customerName}</td>
                         <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${itemsList}</td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #6366f1;">â‚¹${s.totalAmount?.toFixed(2)}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #6366f1;">₹${s.totalAmount?.toFixed(2)}</td>
                     </tr>
                 `}).join('');
                 summaryStats = `
                     <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px; margin-right: 10px;">
                         <div style="font-size: 12px; color: #6b7280;">Total Revenue</div>
-                        <div style="font-size: 20px; font-weight: bold; color: #111827;">â‚¹${salesReport.summary?.totalRevenue?.toFixed(2)}</div>
+                        <div style="font-size: 20px; font-weight: bold; color: #111827;">₹${salesReport.summary?.totalRevenue?.toFixed(2)}</div>
                     </div>
                     <div style="display: inline-block; width: 45%; background: #f3f4f6; padding: 15px; border-radius: 10px;">
                         <div style="font-size: 12px; color: #6b7280;">Transactions</div>
@@ -330,7 +330,7 @@ const ReportsPage: React.FC = () => {
                                 ${item.quantity}
                             </span>
                         </td>
-                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #10b981;">â‚¹${(item.price * item.quantity).toFixed(2)}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #10b981;">₹${(item.price * item.quantity).toFixed(2)}</td>
                     </tr>
                 `).join('');
                 summaryStats = `
@@ -340,7 +340,7 @@ const ReportsPage: React.FC = () => {
                     </div>
                     <div style="display: inline-block; width: 30%; background: #f3f4f6; padding: 10px; border-radius: 10px; margin-right: 5px;">
                         <div style="font-size: 10px; color: #6b7280;">Net Value</div>
-                        <div style="font-size: 16px; font-weight: bold; color: #111827;">â‚¹${itemsReport.summary?.totalValue?.toFixed(0)}</div>
+                        <div style="font-size: 16px; font-weight: bold; color: #111827;">₹${itemsReport.summary?.totalValue?.toFixed(0)}</div>
                     </div>
                     <div style="display: inline-block; width: 30%; background: #f3f4f6; padding: 10px; border-radius: 10px;">
                         <div style="font-size: 10px; color: #6b7280;">Low Stock</div>
@@ -370,7 +370,7 @@ const ReportsPage: React.FC = () => {
                             <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
                                 <span style="background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; border: 1px solid #e2e8f0;">${t.paymentMethod}</span>
                             </td>
-                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">â‚¹${t.totalAmount.toFixed(2)}</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right; font-weight: bold; color: #111827;">₹${t.totalAmount.toFixed(2)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -382,11 +382,11 @@ const ReportsPage: React.FC = () => {
                         <div style="margin-top: 10px; display: flex; gap: 20px;">
                             <div>
                                 <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Total Billing</div>
-                                <div style="font-size: 18px; font-weight: bold; color: #1e293b;">â‚¹${ledgerReport.summary?.totalSpent?.toFixed(2)}</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #1e293b;">₹${ledgerReport.summary?.totalSpent?.toFixed(2)}</div>
                             </div>
                             <div>
                                 <div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Account Balance</div>
-                                <div style="font-size: 18px; font-weight: bold; color: #10b981;">â‚¹0.00</div>
+                                <div style="font-size: 18px; font-weight: bold; color: #10b981;">₹0.00</div>
                             </div>
                         </div>
                     </div>
@@ -521,7 +521,7 @@ const ReportsPage: React.FC = () => {
                             ) : salesReport ? (
                                 <>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <SummaryCard title="Total Revenue" value={`â‚¹${salesReport.summary?.totalRevenue?.toFixed(2) || '0.00'}`} subtitle="Across selected period" />
+                                        <SummaryCard title="Total Revenue" value={`₹${salesReport.summary?.totalRevenue?.toFixed(2) || '0.00'}`} subtitle="Across selected period" />
                                         <SummaryCard title="Total Transactions" value={salesReport.summary?.totalSales || 0} subtitle="Count of completed sales" />
                                     </div>
                                     <div className="rounded-xl border border-white/10 bg-card overflow-hidden shadow-lg">
@@ -559,11 +559,11 @@ const ReportsPage: React.FC = () => {
                                                                                 <div className="flex items-center gap-1.5 text-[9px] text-muted-foreground font-medium">
                                                                                     <span>{item.quantity} units</span>
                                                                                     <span className="size-0.5 rounded-full bg-muted-foreground/30"></span>
-                                                                                    <span>â‚¹{item.priceAtSale}/unit</span>
+                                                                                    <span>₹{item.priceAtSale}/unit</span>
                                                                                 </div>
                                                                             </div>
                                                                             <div className="text-[11px] font-bold text-primary">
-                                                                                â‚¹{(item.quantity * item.priceAtSale).toFixed(0)}
+                                                                                ₹{(item.quantity * item.priceAtSale).toFixed(0)}
                                                                             </div>
                                                                         </div>
                                                                     ))}
@@ -582,7 +582,7 @@ const ReportsPage: React.FC = () => {
                                                                     )}
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell className="text-right font-medium text-primary">â‚¹{s.totalAmount?.toFixed(2)}</TableCell>
+                                                            <TableCell className="text-right font-medium text-primary">₹{s.totalAmount?.toFixed(2)}</TableCell>
                                                         </TableRow>
                                                     ))
                                                 )}
@@ -619,7 +619,7 @@ const ReportsPage: React.FC = () => {
                                             <h3 className="text-[10px] font-black uppercase tracking-widest text-primary/70 mb-1 flex items-center gap-1.5">
                                                 <Zap className="size-3" /> Inventory Value
                                             </h3>
-                                            <p className="text-xl font-black text-foreground">â‚¹{itemsReport.summary?.totalValue?.toLocaleString() || '0'}</p>
+                                            <p className="text-xl font-black text-foreground">₹{itemsReport.summary?.totalValue?.toLocaleString() || '0'}</p>
                                             <p className="text-[10px] text-muted-foreground mt-1 font-bold">Capital locked in stock</p>
                                         </div>
 
@@ -695,7 +695,7 @@ const ReportsPage: React.FC = () => {
                                                                 </TableCell>
                                                                 <TableCell className="text-right py-4">
                                                                     <div className="font-black text-xs text-emerald-500">
-                                                                        â‚¹{(item.price * item.quantity).toFixed(0)}
+                                                                        ₹{(item.price * item.quantity).toFixed(0)}
                                                                     </div>
                                                                 </TableCell>
                                                             </TableRow>
@@ -751,7 +751,7 @@ const ReportsPage: React.FC = () => {
                                         <div className="grid grid-cols-2 gap-8 relative z-10">
                                             <div>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total Billing</p>
-                                                <p className="text-xl font-black text-foreground">â‚¹{ledgerReport.summary?.totalSpent?.toFixed(2)}</p>
+                                                <p className="text-xl font-black text-foreground">₹{ledgerReport.summary?.totalSpent?.toFixed(2)}</p>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] text-muted-foreground uppercase font-black tracking-tighter">Visit Count</p>
@@ -792,7 +792,7 @@ const ReportsPage: React.FC = () => {
                                                                                     {item.productName || item.productId?.name || 'Product'}
                                                                                     <span className="ml-2 text-[9px] text-primary/60 font-black">x{item.quantity}</span>
                                                                                 </span>
-                                                                                <span className="text-[10px] font-bold text-foreground/80">â‚¹{(item.priceAtSale || item.productId?.price || 0).toFixed(2)}</span>
+                                                                                <span className="text-[10px] font-bold text-foreground/80">₹{(item.priceAtSale || item.productId?.price || 0).toFixed(2)}</span>
                                                                             </div>
                                                                         ))}
                                                                     </div>
@@ -804,7 +804,7 @@ const ReportsPage: React.FC = () => {
                                                                 </Badge>
                                                             </TableCell>
                                                             <TableCell className="text-right py-4 font-black text-foreground text-sm">
-                                                                â‚¹{t.totalAmount.toFixed(2)}
+                                                                ₹{t.totalAmount.toFixed(2)}
                                                             </TableCell>
                                                         </TableRow>
                                                     ))
@@ -872,10 +872,10 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>{s.customerName}</TableCell>
                                             <TableCell>
                                                 {s.items?.map((i: any) =>
-                                                    `${i.productName || i.productId?.name || 'Unknown'} (${i.quantity} x â‚¹${i.priceAtSale} = â‚¹${(i.quantity * i.priceAtSale).toFixed(2)})`
+                                                    `${i.productName || i.productId?.name || 'Unknown'} (${i.quantity} x ₹${i.priceAtSale} = ₹${(i.quantity * i.priceAtSale).toFixed(2)})`
                                                 ).join('; ')}
                                             </TableCell>
-                                            <TableCell>â‚¹{s.totalAmount?.toFixed(2)}</TableCell>
+                                            <TableCell>₹{s.totalAmount?.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -901,8 +901,8 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>{item.sku}</TableCell>
                                             <TableCell>{item.category}</TableCell>
                                             <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>â‚¹{item.price?.toFixed(2)}</TableCell>
-                                            <TableCell>â‚¹{(item.price * item.quantity).toFixed(2)}</TableCell>
+                                            <TableCell>₹{item.price?.toFixed(2)}</TableCell>
+                                            <TableCell>₹{(item.price * item.quantity).toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -927,11 +927,11 @@ const ReportsPage: React.FC = () => {
                                             <TableCell>TXN-{t.id.slice(-6).toUpperCase()}</TableCell>
                                             <TableCell>
                                                 {t.items?.map((i: any) =>
-                                                    `${i.productName || i.productId?.name || 'Item'} (${i.quantity} x â‚¹${i.priceAtSale})`
+                                                    `${i.productName || i.productId?.name || 'Item'} (${i.quantity} x ₹${i.priceAtSale})`
                                                 ).join('; ')}
                                             </TableCell>
                                             <TableCell>{t.paymentMethod}</TableCell>
-                                            <TableCell>â‚¹{t.totalAmount.toFixed(2)}</TableCell>
+                                            <TableCell>₹{t.totalAmount.toFixed(2)}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
