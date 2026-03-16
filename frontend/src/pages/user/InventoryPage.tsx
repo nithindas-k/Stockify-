@@ -324,7 +324,7 @@ const InventoryPage: React.FC = () => {
                                         </div>
                                     </div>
                                     {product.description && (
-                                        <div className="text-xs text-muted-foreground line-clamp-2 mt-[-5px]">
+                                        <div className="text-xs text-muted-foreground line-clamp-2 mt-[-5px] break-words">
                                             {product.description}
                                         </div>
                                     )}

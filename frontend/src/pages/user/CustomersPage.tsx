@@ -305,7 +305,7 @@ const CustomersPage: React.FC = () => {
                                         </div>
                                         <div className="flex items-start gap-2 text-muted-foreground">
                                             <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                                            <span className="font-medium text-foreground line-clamp-2">{customer.address}</span>
+                                            <span className="font-medium text-foreground line-clamp-2 break-all">{customer.address}</span>
                                         </div>
                                     </div>
                                 </div>
