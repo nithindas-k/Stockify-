@@ -10,3 +10,22 @@ export interface CreateSaleDTO {
         quantity: number;
     }[];
 }
+
+export interface SaleItemResponseDTO {
+    productId: string;
+    productName: string;
+    quantity: number;
+    priceAtSale: number;
+}
+
+export interface SaleResponseDTO {
+    id: string;
+    customerName: string;
+    customerId?: string | undefined;
+    items: SaleItemResponseDTO[];
+    totalAmount: number;
+    saleDate: string;
+    paymentMethod: string;
+    createdAt: string;
+    updatedAt: string;
+}

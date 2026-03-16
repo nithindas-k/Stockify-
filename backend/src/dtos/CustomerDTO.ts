@@ -10,3 +10,12 @@ export const UpdateCustomerSchema = CreateCustomerSchema.partial();
 
 export type CreateCustomerDTO = z.infer<typeof CreateCustomerSchema>;
 export type UpdateCustomerDTO = z.infer<typeof UpdateCustomerSchema>;
+
+export interface CustomerResponseDTO {
+    id: string;
+    name: string;
+    mobile: string;
+    address: string;
+    createdAt: string;
+    updatedAt: string;
+}

@@ -2,6 +2,7 @@ import * as express from 'express';
 import { INotificationService } from '../services/interfaces/INotificationService';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { INotificationController } from './interfaces/INotificationController';
+import { NotificationMapper } from '../mappers/NotificationMapper';
 
 export class NotificationController implements INotificationController {
     constructor(private notificationService: INotificationService) { }
@@ -10,7 +11,7 @@ export class NotificationController implements INotificationController {
         try {
             const userId = (req as AuthRequest).user.id;
             const notifications = await this.notificationService.getNotifications(userId);
-            res.status(200).json(notifications);
+            res.status(200).json(notifications.map(NotificationMapper.toDTO));
         } catch (error: any) {
             res.status(500).json({ message: error.message || 'Error fetching notifications' });
         }

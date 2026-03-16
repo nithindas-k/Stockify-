@@ -3,6 +3,7 @@ import { IReportService } from '../services/interfaces/IReportService';
 import { MailService } from '../utils/MailService';
 import { AuthRequest } from '../middleware/authMiddleware';
 import { IReportController } from './interfaces/IReportController';
+import { ReportMapper } from '../mappers/ReportMapper';
 
 export class ReportController implements IReportController {
     constructor(private reportService: IReportService) { }
@@ -12,7 +13,7 @@ export class ReportController implements IReportController {
             const userId = (req as AuthRequest).user.id;
             const { startDate, endDate } = req.query;
             const report = await this.reportService.getSalesReport(userId, startDate as string, endDate as string);
-            res.status(200).json({ data: report });
+            res.status(200).json({ data: ReportMapper.toSalesReportDTO(report.sales, report.summary.totalRevenue, report.summary.totalSales) });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
         }
@@ -22,7 +23,7 @@ export class ReportController implements IReportController {
         try {
             const userId = (req as AuthRequest).user.id;
             const report = await this.reportService.getItemsReport(userId);
-            res.status(200).json({ data: report });
+            res.status(200).json({ data: ReportMapper.toInventoryReportDTO(report.items, report.summary.totalItems, report.summary.totalValue, report.summary.lowStockItems) });
         } catch (error: any) {
             res.status(400).json({ message: error.message });
         }
@@ -32,7 +33,7 @@ export class ReportController implements IReportController {
         try {
             const userId = (req as AuthRequest).user.id;
             const report = await this.reportService.getCustomerLedger(userId, req.params.customerId as string);
-            res.status(200).json({ data: report });
+            res.status(200).json({ data: ReportMapper.toLedgerReportDTO(report.customer, report.transactions, report.summary.totalSpent) });
         } catch (error: any) {
             res.status(404).json({ message: error.message });
         }

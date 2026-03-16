@@ -14,3 +14,16 @@ export const UpdateProductSchema = CreateProductSchema.partial();
 
 export type CreateProductDTO = z.infer<typeof CreateProductSchema>;
 export type UpdateProductDTO = z.infer<typeof UpdateProductSchema>;
+
+export interface ProductResponseDTO {
+    id: string;
+    name: string;
+    sku: string;
+    category: string;
+    quantity: number;
+    price: number;
+    lowStockThreshold: number;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+}
