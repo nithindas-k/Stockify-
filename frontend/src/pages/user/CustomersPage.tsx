@@ -21,7 +21,7 @@ import { Spinner } from '../../components/ui/spinner';
 import { useDebounce } from '../../hooks/useDebounce';
 
 interface Customer {
-    _id: string;
+    id: string;
     name: string;
     mobile: string;
     address: string;
@@ -64,7 +64,7 @@ const CustomersPage: React.FC = () => {
 
     const handleOpenModal = (customer?: Customer) => {
         if (customer) {
-            setEditingId(customer._id);
+            setEditingId(customer.id);
             setFormData(customer);
         } else {
             setEditingId(null);
@@ -267,7 +267,7 @@ const CustomersPage: React.FC = () => {
                             </div>
                         ) : (
                             pagedCustomers.map((customer) => (
-                                <div key={customer._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
+                                <div key={customer.id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
                                     <div className="absolute top-3 right-3">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -281,7 +281,7 @@ const CustomersPage: React.FC = () => {
                                                     <Edit className="w-4 h-4 text-muted-foreground" />
                                                     Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => confirmDelete(customer._id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
+                                                <DropdownMenuItem onClick={() => confirmDelete(customer.id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
                                                     <Trash2 className="w-4 h-4" />
                                                     Delete
                                                 </DropdownMenuItem>
@@ -340,7 +340,7 @@ const CustomersPage: React.FC = () => {
                                     </TableRow>
                                 ) : (
                                     pagedCustomers.map((customer) => (
-                                        <TableRow key={customer._id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                                        <TableRow key={customer.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:border-primary/50 transition-colors">
@@ -379,7 +379,7 @@ const CustomersPage: React.FC = () => {
                                                             <Edit className="w-4 h-4 text-muted-foreground" />
                                                             Edit
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => confirmDelete(customer._id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
+                                                        <DropdownMenuItem onClick={() => confirmDelete(customer.id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
                                                             <Trash2 className="w-4 h-4" />
                                                             Delete
                                                         </DropdownMenuItem>

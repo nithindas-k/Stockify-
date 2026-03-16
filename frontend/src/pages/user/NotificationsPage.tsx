@@ -111,7 +111,7 @@ const NotificationsPage: React.FC = () => {
                         ) : (
                             pagedNotifications.map((notif) => (
                                 <div
-                                    key={notif._id}
+                                    key={notif.id}
                                     className="p-5 bg-card/40 border border-border/50 rounded-xl hover:border-primary/30 transition-all flex gap-4 items-start"
                                 >
                                     <div className={`mt-0.5 p-2 rounded-lg ${notif.type === 'LOW_STOCK' ? 'bg-red-500/10 text-red-500' : 'bg-blue-500/10 text-blue-500'} shrink-0`}>

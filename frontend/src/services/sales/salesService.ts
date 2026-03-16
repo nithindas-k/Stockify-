@@ -26,7 +26,7 @@ export const salesService = {
         apiClient.get(SALES_ROUTES.GET_ALL, { params }),
 
     getById: (id: string) =>
-        apiClient.get(SALES_ROUTES.GET_BY_ID(id)),
+        apiClient.get(SALES_ROUTES.GET_BYid(id)),
 
     create: (payload: SalePayload) =>
         apiClient.post(SALES_ROUTES.CREATE, payload),

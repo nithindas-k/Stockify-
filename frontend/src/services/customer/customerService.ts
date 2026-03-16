@@ -20,7 +20,7 @@ export const customerService = {
         apiClient.get(CUSTOMER_ROUTES.GET_ALL, { params }),
 
     getById: (id: string) =>
-        apiClient.get(CUSTOMER_ROUTES.GET_BY_ID(id)),
+        apiClient.get(CUSTOMER_ROUTES.GET_BYid(id)),
 
     create: (payload: CustomerPayload) =>
         apiClient.post(CUSTOMER_ROUTES.CREATE, payload),

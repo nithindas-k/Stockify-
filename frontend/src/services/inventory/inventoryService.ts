@@ -1,7 +1,7 @@
 import apiClient from '../../api/apiClient';
 import { INVENTORY_ROUTES } from '../../utils/constants/apiRoutes';
 
-/* ── Payload / Query types ──────────────────────────────────── */
+/* â”€â”€ Payload / Query types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 export interface GetInventoryParams {
     page?: number;
     limit?: number;
@@ -25,7 +25,7 @@ export const inventoryService = {
         apiClient.get(INVENTORY_ROUTES.GET_ALL, { params }),
 
     getById: (id: string) =>
-        apiClient.get(INVENTORY_ROUTES.GET_BY_ID(id)),
+        apiClient.get(INVENTORY_ROUTES.GET_BYid(id)),
 
     create: (payload: InventoryPayload) =>
         apiClient.post(INVENTORY_ROUTES.CREATE, payload),

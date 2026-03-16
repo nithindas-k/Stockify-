@@ -24,7 +24,7 @@ import { Badge } from '../../components/ui/badge';
 import { useDebounce } from '../../hooks/useDebounce';
 
 interface Product {
-    _id: string;
+    id: string;
     name: string;
     price: number;
     quantity: number;
@@ -32,19 +32,19 @@ interface Product {
 }
 
 interface Customer {
-    _id: string;
+    id: string;
     name: string;
     mobile: string;
 }
 
 interface Sale {
-    _id: string;
+    id: string;
     customerName: string;
     totalAmount: number;
     saleDate: string;
     paymentMethod: string;
     items: {
-        productId: { name: string, _id: string };
+        productId: { name: string, id: string };
         quantity: number;
         priceAtSale: number;
     }[];
@@ -117,7 +117,7 @@ const SalesPage: React.FC = () => {
             setFormCustomerName('');
             setFormCustomerMobile('');
         } else {
-            const c = allCustomers.find(x => x._id === val);
+            const c = allCustomers.find(x => x.id === val);
             if (c) {
                 setFormCustomerName(c.name);
                 setFormCustomerMobile(c.mobile);
@@ -132,7 +132,7 @@ const SalesPage: React.FC = () => {
     const updateItemLine = (index: number, field: string, value: any) => {
         const newItems = [...formItems];
         if (field === 'productId') {
-            const product = allProducts.find(p => p._id === value);
+            const product = allProducts.find(p => p.id === value);
             if (!product) return;
 
 
@@ -165,7 +165,7 @@ const SalesPage: React.FC = () => {
             if (qty < 1) qty = 1;
 
             const item = newItems[index];
-            const product = allProducts.find(p => p._id === item.productId);
+            const product = allProducts.find(p => p.id === item.productId);
 
             if (product && qty > product.quantity) {
                 toast.error(`Insufficient stock! Only ${product.quantity} units available.`);
@@ -325,7 +325,7 @@ const SalesPage: React.FC = () => {
                                                             </div>
                                                         </SelectItem>
                                                         {allCustomers.map(c => (
-                                                            <SelectItem key={c._id} value={c._id}>
+                                                            <SelectItem key={c.id} value={c.id}>
                                                                 <div className="flex flex-col">
                                                                     <span className="font-medium">{c.name}</span>
                                                                     <span className="text-[10px] text-muted-foreground">{c.mobile}</span>
@@ -428,8 +428,8 @@ const SalesPage: React.FC = () => {
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {allProducts.map(p => (
-                                                                        <SelectItem key={p._id} value={p._id} disabled={p.quantity <= 0}>
-                                                                            {p.name} - ₹{p.price} {p.quantity <= 0 ? '(Out of Stock)' : `(${p.quantity} in stock)`}
+                                                                        <SelectItem key={p.id} value={p.id} disabled={p.quantity <= 0}>
+                                                                            {p.name} - â‚¹{p.price} {p.quantity <= 0 ? '(Out of Stock)' : `(${p.quantity} in stock)`}
                                                                         </SelectItem>
                                                                     ))}
                                                                 </SelectContent>
@@ -445,7 +445,7 @@ const SalesPage: React.FC = () => {
                                                             />
                                                         </div>
                                                         <div className="w-24 pb-2.5 text-right font-medium">
-                                                            ₹{(item.pricePerUnit * item.quantity).toFixed(2)}
+                                                            â‚¹{(item.pricePerUnit * item.quantity).toFixed(2)}
                                                         </div>
                                                         <button
                                                             onClick={() => removeItemLine(idx)}
@@ -461,7 +461,7 @@ const SalesPage: React.FC = () => {
 
                                     <div className="flex justify-between items-center px-1 mb-2">
                                         <span className="text-muted-foreground">Total Display:</span>
-                                        <span className="text-2xl font-bold text-primary">₹{modalTotal.toFixed(2)}</span>
+                                        <span className="text-2xl font-bold text-primary">â‚¹{modalTotal.toFixed(2)}</span>
                                     </div>
 
                                     <DialogFooter>
@@ -503,14 +503,14 @@ const SalesPage: React.FC = () => {
                                     </TableRow>
                                 ) : (
                                     pagedSales.map((sale) => (
-                                        <TableRow key={sale._id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                                        <TableRow key={sale.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 group-hover:border-green-500/50 transition-colors">
                                                         <ShoppingBag className="w-5 h-5 text-green-500" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-semibold text-foreground text-xs uppercase tracking-wider">TXN-{sale._id.slice(-6)}</div>
+                                                        <div className="font-semibold text-foreground text-xs uppercase tracking-wider">TXN-{sale.id.slice(-6)}</div>
                                                         <div className="text-xs text-muted-foreground">{new Date(sale.saleDate).toLocaleString()}</div>
                                                     </div>
                                                 </div>
@@ -523,7 +523,7 @@ const SalesPage: React.FC = () => {
                                                 <Badge variant="outline" className="border-white/10">{sale.paymentMethod}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <div className="font-bold text-lg text-primary">₹{sale.totalAmount.toFixed(2)}</div>
+                                                <div className="font-bold text-lg text-primary">â‚¹{sale.totalAmount.toFixed(2)}</div>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -546,13 +546,13 @@ const SalesPage: React.FC = () => {
                             </div>
                         ) : (
                             pagedSales.map((sale) => (
-                                <div key={sale._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-green-500/30 transition-colors">
+                                <div key={sale.id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-green-500/30 transition-colors">
                                     <div className="flex items-center gap-3 pr-8">
                                         <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 shrink-0">
                                             <ShoppingBag className="w-5 h-5 text-green-500" />
                                         </div>
                                         <div className="min-w-0 flex-1">
-                                            <div className="font-semibold text-foreground truncate">TXN-{sale._id.slice(-6).toUpperCase()}</div>
+                                            <div className="font-semibold text-foreground truncate">TXN-{sale.id.slice(-6).toUpperCase()}</div>
                                             <div className="text-xs text-muted-foreground truncate">{new Date(sale.saleDate).toLocaleString()}</div>
                                         </div>
                                     </div>
@@ -568,7 +568,7 @@ const SalesPage: React.FC = () => {
                                         </div>
                                         <div className="pt-2 mt-2 border-t border-white/5 flex justify-between items-center">
                                             <span className="text-muted-foreground text-xs">Grand Total</span>
-                                            <span className="font-bold text-primary">₹{sale.totalAmount.toFixed(2)}</span>
+                                            <span className="font-bold text-primary">â‚¹{sale.totalAmount.toFixed(2)}</span>
                                         </div>
                                     </div>
                                 </div>

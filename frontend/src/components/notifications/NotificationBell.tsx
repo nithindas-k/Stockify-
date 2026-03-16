@@ -94,7 +94,7 @@ export const NotificationBell: React.FC = () => {
                             </div>
                         ) : (
                             notifications.map((notif) => (
-                                <div key={notif._id} className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
+                                <div key={notif.id} className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3">
                                     <div className="mt-0.5 w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
                                         <Package className="w-4 h-4 text-red-500" />
                                     </div>

@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useDebounce } from '../../hooks/useDebounce';
 
 interface Product {
-    _id: string;
+    id: string;
     name: string;
     sku: string;
     category: string;
@@ -69,7 +69,7 @@ const InventoryPage: React.FC = () => {
 
     const handleOpenModal = (product?: Product) => {
         if (product) {
-            setEditingId(product._id);
+            setEditingId(product.id);
             setFormData(product);
         } else {
             setEditingId(null);
@@ -223,7 +223,7 @@ const InventoryPage: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-1.5 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4 snap-start">
-                                            <Label htmlFor="price" className="sm:text-right font-medium">Price (₹) <span className="text-red-500">*</span></Label>
+                                            <Label htmlFor="price" className="sm:text-right font-medium">Price (â‚¹) <span className="text-red-500">*</span></Label>
                                             <Input
                                                 id="price"
                                                 type="number"
@@ -293,7 +293,7 @@ const InventoryPage: React.FC = () => {
                             </div>
                         ) : (
                             pagedProducts.map((product) => (
-                                <div key={product._id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
+                                <div key={product.id} className="bg-card rounded-xl border border-white/10 p-5 shadow-lg flex flex-col gap-4 relative group hover:border-primary/30 transition-colors">
                                     <div className="absolute top-3 right-3">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -307,7 +307,7 @@ const InventoryPage: React.FC = () => {
                                                     <Edit className="w-4 h-4 text-muted-foreground" />
                                                     Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => confirmDelete(product._id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
+                                                <DropdownMenuItem onClick={() => confirmDelete(product.id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
                                                     <Trash2 className="w-4 h-4" />
                                                     Delete
                                                 </DropdownMenuItem>
@@ -335,7 +335,7 @@ const InventoryPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Price</span>
-                                            <span className="font-medium text-xs">₹{product.price.toFixed(2)}</span>
+                                            <span className="font-medium text-xs">â‚¹{product.price.toFixed(2)}</span>
                                         </div>
                                         <div>
                                             <span className="text-muted-foreground text-[10px] uppercase tracking-wider block mb-0.5">Stock</span>
@@ -386,7 +386,7 @@ const InventoryPage: React.FC = () => {
                                     </TableRow>
                                 ) : (
                                     pagedProducts.map((product) => (
-                                        <TableRow key={product._id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                                        <TableRow key={product.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                                             <TableCell className="font-medium">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:border-primary/50 transition-colors">
@@ -403,7 +403,7 @@ const InventoryPage: React.FC = () => {
                                                 <div className="text-xs text-muted-foreground">{product.category}</div>
                                             </TableCell>
                                             <TableCell className="text-right font-medium">
-                                                ₹{product.price.toFixed(2)}
+                                                â‚¹{product.price.toFixed(2)}
                                             </TableCell>
                                             <TableCell className="text-right font-medium">
                                                 {product.quantity}
@@ -430,7 +430,7 @@ const InventoryPage: React.FC = () => {
                                                             <Edit className="w-4 h-4 text-muted-foreground" />
                                                             Edit
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => confirmDelete(product._id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
+                                                        <DropdownMenuItem onClick={() => confirmDelete(product.id)} className="cursor-pointer gap-2 text-primary focus:bg-primary/10 focus:text-primary">
                                                             <Trash2 className="w-4 h-4" />
                                                             Delete
                                                         </DropdownMenuItem>

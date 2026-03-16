@@ -9,7 +9,7 @@ export const AUTH_ROUTES = {
 
 export const INVENTORY_ROUTES = {
     GET_ALL: '/inventory',
-    GET_BY_ID: (id: string) => `/inventory/${id}`,
+    GET_BYid: (id: string) => `/inventory/${id}`,
     CREATE: '/inventory',
     UPDATE: (id: string) => `/inventory/${id}`,
     DELETE: (id: string) => `/inventory/${id}`,
@@ -18,7 +18,7 @@ export const INVENTORY_ROUTES = {
 
 export const CUSTOMER_ROUTES = {
     GET_ALL: '/customers',
-    GET_BY_ID: (id: string) => `/customers/${id}`,
+    GET_BYid: (id: string) => `/customers/${id}`,
     CREATE: '/customers',
     UPDATE: (id: string) => `/customers/${id}`,
     DELETE: (id: string) => `/customers/${id}`,
@@ -27,7 +27,7 @@ export const CUSTOMER_ROUTES = {
 
 export const SALES_ROUTES = {
     GET_ALL: '/sales',
-    GET_BY_ID: (id: string) => `/sales/${id}`,
+    GET_BYid: (id: string) => `/sales/${id}`,
     CREATE: '/sales',
     UPDATE: (id: string) => `/sales/${id}`,
     DELETE: (id: string) => `/sales/${id}`,

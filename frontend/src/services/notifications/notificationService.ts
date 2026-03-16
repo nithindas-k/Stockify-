@@ -1,7 +1,7 @@
 import apiClient from '../../api/apiClient';
 
 export interface Notification {
-    _id: string;
+    id: string;
     type: 'LOW_STOCK' | 'SYSTEM';
     productId?: string;
     message: string;
