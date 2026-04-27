@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export class MailService {
-  private transporter;
+  private _transporter;
 
   constructor() {
     const isGmail = process.env.SMTP_HOST === 'smtp.gmail.com' || (process.env.SMTP_USER && process.env.SMTP_USER.endsWith('@gmail.com'));
@@ -13,7 +13,7 @@ export class MailService {
 
     if (isGmail) {
       console.log('[MailService] Using Explicit Gmail SSL (Port 465)');
-      this.transporter = nodemailer.createTransport({
+      this._transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
         secure: true, 
@@ -30,7 +30,7 @@ export class MailService {
     } else {
       const port = Number(process.env.SMTP_PORT) || 587;
       console.log(`[MailService] Using Custom SMTP: ${process.env.SMTP_HOST}:${port}`);
-      this.transporter = nodemailer.createTransport({
+      this._transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: port,
         secure: port === 465,
@@ -52,7 +52,7 @@ export class MailService {
   async sendReport(email: string, subject: string, htmlContent: string) {
     try {
       console.log(`[MailService] Attempting to verify connection...`);
-      await this.transporter.verify();
+      await this._transporter.verify();
       console.log(`[MailService] Connection verified successfully.`);
 
       const mailOptions = {
@@ -63,7 +63,7 @@ export class MailService {
       };
       
       console.log(`[MailService] Sending email to: ${email}`);
-      const info = await this.transporter.sendMail(mailOptions);
+      const info = await this._transporter.sendMail(mailOptions);
       console.log(`[MailService] Email sent successfully: ${info.messageId}`);
       return info;
     } catch (error) {

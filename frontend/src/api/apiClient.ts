@@ -1,6 +1,7 @@
 import axios from 'axios';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
+import { StatusCode } from '../enums/StatusCode';
 
 
 NProgress.configure({
@@ -40,7 +41,7 @@ apiClient.interceptors.response.use(
         NProgress.done();
         const isAuthRequest = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
 
-        if (error.response?.status === 401 && !isAuthRequest) {
+        if (error.response?.status === StatusCode.UNAUTHORIZED && !isAuthRequest) {
             localStorage.removeItem('token');
 
             if (window.location.pathname !== '/login') {

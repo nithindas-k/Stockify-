@@ -7,13 +7,13 @@ import { UserMapper } from '../mappers/UserMapper';
 import { APP_MESSAGES } from '../constants/constants';
 
 export class AuthService implements IAuthService {
-    private userRepository: IUserRepository;
+    private _userRepository: IUserRepository;
     constructor(userRepository: IUserRepository) {
-        this.userRepository = userRepository;
+        this._userRepository = userRepository;
     }
 
     async login(credentials: LoginDTO): Promise<AuthResponseDTO> {
-        const user = await this.userRepository.findByEmail(credentials.email);
+        const user = await this._userRepository.findByEmail(credentials.email);
 
         if (!user) {
             throw new Error('User not found. Please check your email.');
@@ -38,14 +38,14 @@ export class AuthService implements IAuthService {
     }
 
     async register(userData: RegisterDTO): Promise<AuthResponseDTO> {
-        const existingUser = await this.userRepository.findByEmail(userData.email);
+        const existingUser = await this._userRepository.findByEmail(userData.email);
         if (existingUser) {
             throw new Error('Email already exists');
         }
 
         const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-        const newUser = await this.userRepository.create({
+        const newUser = await this._userRepository.create({
             name: userData.name,
             email: userData.email,
             password: hashedPassword,

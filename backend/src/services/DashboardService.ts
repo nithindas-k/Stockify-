@@ -5,17 +5,17 @@ import { IDashboardService } from './interfaces/IDashboardService';
 
 export class DashboardService implements IDashboardService {
     constructor(
-        private productRepo: IProductRepository,
-        private saleRepo: ISaleRepository,
-        private customerRepo: ICustomerRepository
+        private _productRepo: IProductRepository,
+        private _saleRepo: ISaleRepository,
+        private _customerRepo: ICustomerRepository
     ) { }
 
     async getStats(userId: string) {
         const [products, sales, customers, lowStockItems] = await Promise.all([
-            this.productRepo.findAll(userId),
-            this.saleRepo.findAll(userId),
-            this.customerRepo.findAll(userId),
-            this.productRepo.findLowStock(userId)
+            this._productRepo.findAll(userId),
+            this._saleRepo.findAll(userId),
+            this._customerRepo.findAll(userId),
+            this._productRepo.findLowStock(userId)
         ]);
 
         const totalRevenue = sales.reduce((acc, sale) => acc + sale.totalAmount, 0);

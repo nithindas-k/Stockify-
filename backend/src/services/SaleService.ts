@@ -6,9 +6,9 @@ import { ISaleService } from './interfaces/ISaleService';
 
 export class SaleService implements ISaleService {
     constructor(
-        private saleRepository: ISaleRepository,
-        private productRepository: IProductRepository,
-        private notificationService: INotificationService
+        private _saleRepository: ISaleRepository,
+        private _productRepository: IProductRepository,
+        private _notificationService: INotificationService
     ) { }
 
     async createSale(saleData: CreateSaleDTO): Promise<any> {
@@ -16,7 +16,7 @@ export class SaleService implements ISaleService {
         const processedItems = [];
 
         for (const item of saleData.items) {
-            const product = await this.productRepository.findById(saleData.userId as string, item.productId);
+            const product = await this._productRepository.findById(saleData.userId as string, item.productId);
             if (!product) {
                 throw new Error(`Product with ID ${item.productId} not found`);
             }
@@ -37,15 +37,15 @@ export class SaleService implements ISaleService {
         }
 
         for (const item of saleData.items) {
-            const product = await this.productRepository.findById(saleData.userId as string, item.productId);
+            const product = await this._productRepository.findById(saleData.userId as string, item.productId);
             if (product) {
                 const newQuantity = product.quantity - item.quantity;
-                await this.productRepository.update(saleData.userId as string, item.productId, {
+                await this._productRepository.update(saleData.userId as string, item.productId, {
                     quantity: newQuantity
                 });
 
                 if (newQuantity < 5) {
-                    await this.notificationService.createLowStockNotification(
+                    await this._notificationService.createLowStockNotification(
                         saleData.userId as string,
                         product._id.toString(),
                         product.name,
@@ -70,16 +70,16 @@ export class SaleService implements ISaleService {
             finalSaleParam.userId = saleData.userId;
         }
 
-        return await this.saleRepository.create(finalSaleParam);
+        return await this._saleRepository.create(finalSaleParam);
     }
 
     async getSale(userId: string, id: string): Promise<any> {
-        const sale = await this.saleRepository.findById(userId, id);
+        const sale = await this._saleRepository.findById(userId, id);
         if (!sale) throw new Error('Sale not found');
         return sale;
     }
 
     async getAllSales(userId: string, query?: string): Promise<any[]> {
-        return await this.saleRepository.findAll(userId, query);
+        return await this._saleRepository.findAll(userId, query);
     }
 }

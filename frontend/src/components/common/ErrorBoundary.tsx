@@ -26,12 +26,12 @@ class ErrorBoundary extends Component<Props, State> {
         console.error('Uncaught error:', error, errorInfo);
     }
 
-    private handleReset = () => {
+    private _handleReset = () => {
         this.setState({ hasError: false, error: null });
         window.location.href = '/';
     };
 
-    private handleReload = () => {
+    private _handleReload = () => {
         window.location.reload();
     };
 
@@ -60,7 +60,7 @@ class ErrorBoundary extends Component<Props, State> {
 
                     <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
                         <Button
-                            onClick={this.handleReload}
+                            onClick={this._handleReload}
                             className="flex-1 gap-2 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 h-12 rounded-xl text-base font-bold transition-all active:scale-95"
                         >
                             <RefreshCcw className="w-4 h-4" />
@@ -68,7 +68,7 @@ class ErrorBoundary extends Component<Props, State> {
                         </Button>
                         <Button
                             variant="outline"
-                            onClick={this.handleReset}
+                            onClick={this._handleReset}
                             className="flex-1 gap-2 border-border hover:bg-muted h-12 rounded-xl text-base font-bold transition-all active:scale-95"
                         >
                             <Home className="w-4 h-4" />

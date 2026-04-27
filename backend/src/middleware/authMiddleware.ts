@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { StatusCode } from '../enums/StatusCode';
 
 export interface AuthRequest extends Request {
     user: {
@@ -24,10 +25,10 @@ export const protect = (req: Request, res: Response, next: NextFunction): void =
             (req as any).user = decoded;
             next();
         } catch (error) {
-            res.status(401).json({ message: 'Not authorized, token failed' });
+            res.status(StatusCode.UNAUTHORIZED).json({ message: 'Not authorized, token failed' });
         }
     } else {
-        res.status(401).json({ message: 'Not authorized, no token' });
+        res.status(StatusCode.UNAUTHORIZED).json({ message: 'Not authorized, no token' });
     }
 };
 
